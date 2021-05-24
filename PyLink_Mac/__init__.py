@@ -21,7 +21,7 @@ import multiprocessing as mp
 from itertools import combinations
 from math import floor
 import glob
-from tkFont import Font
+from tkinter.font import Font
 import os
 
 plugin_path = os.path.dirname(__file__)
@@ -29,10 +29,10 @@ system_working_directory = os.getcwd()
 
 try:
     import Pmw
-    import Tkinter as tk
-    import tkFileDialog
+    import tkinter as tk
+    import tkinter.filedialog
 except:
-    print "  ### Graphic libraries not found. Please install them (Tkinter and Pmw) and re-run the plugin."
+    print("  ### Graphic libraries not found. Please install them (Tkinter and Pmw) and re-run the plugin.")
 
 from pymol.cgo import *
 from pymol import cmd
@@ -46,7 +46,7 @@ try:
     from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
     from matplotlib.lines import Line2D
 except:
-    print "  ### Matplotlib library not found. Please install it and re-run the plugin."
+    print("  ### Matplotlib library not found. Please install it and re-run the plugin.")
 
 
 def __init__(self):
@@ -137,19 +137,19 @@ class PyLink:
     ####################################################################################################################
 
     def load_file(self):
-        self.open_file_window = tkFileDialog.askopenfilenames(initialdir=os.getcwd(), title="PyLink",
+        self.open_file_window = tkinter.filedialog.askopenfilenames(initialdir=os.getcwd(), title="PyLink",
                                                               filetypes=[("PDB", "*.pdb"), ("XYZ", "*.xyz")])
 
         self._full_path_to_files = []
         if not self.open_file_window or None == self.open_file_window:
-            print "# No file was chosen. PyLink was shut down."
+            print("# No file was chosen. PyLink was shut down.")
             return
         elif len(self.open_file_window) > 4:
-            print "# Too many files were chosen. Please pick at most four XYZ files and one PDB file."
+            print("# Too many files were chosen. Please pick at most four XYZ files and one PDB file.")
             return
         elif all([path_file.endswith(".pdb") for path_file in self.open_file_window]) and \
                 [path_file.endswith(".pdb") for path_file in self.open_file_window].count(True) > 1:
-            print "# Too many PDB files were chosen. Choose only one file and try again."
+            print("# Too many PDB files were chosen. Choose only one file and try again.")
             return
         elif 1 < len(self.open_file_window) <= 4:
             for i in self.open_file_window:
@@ -188,7 +188,7 @@ class PyLink:
             for i in cmd.get_chains(self._filenames[idx][:-4]):
                 structure.append(i)
             self._chains.append(structure)
-        print "  Structures reloaded..."
+        print("  Structures reloaded...")
 
     def is_input_marcolink(self, file_idx):
         input_file = open(self._full_path_to_files[file_idx], "r").read()
@@ -271,7 +271,7 @@ class PyLink:
 
         with open(path_to_file, "r") as f:
             for line in f:
-                clear_line = filter(len, line.split(" "))
+                clear_line = list(filter(len, line.split(" ")))
                 if clear_line[0] == "TER":
                     if clear_line[4].isdigit():
                         self._chains_marginal_atoms[link_file + chain] = (beg, clear_line[4])
@@ -316,7 +316,7 @@ class PyLink:
         self.notebook.add("Probabilistic")
         self.notebook.add("Macromolecular links")
 
-        if all(self._is_file_macrolink[struct] for struct in self._is_file_macrolink.keys()):
+        if all(self._is_file_macrolink[struct] for struct in list(self._is_file_macrolink.keys())):
             self.notebook.selectpage("Macromolecular links")
             self.disable_pages = True
         else:
@@ -525,7 +525,7 @@ class PyLink:
             i[1].setentry("")
             i[2].setentry("")
 
-        for i in self.distance_error.keys():
+        for i in list(self.distance_error.keys()):
             self.distance_error[i].grid_forget()
 
     def pymol_display_chain(self, list_chains):
@@ -636,10 +636,10 @@ class PyLink:
         cmd.distance(name="DIST_" + beg + "_" + end, selection1=selection1, selection2=selection2)
 
         calc_distance = round(cmd.get_distance(atom1=selection1, atom2=selection2), 1)
-        print "  ## DISTANCE between atoms " + beg + " and " + end + " is " + str(calc_distance)
+        print("  ## DISTANCE between atoms " + beg + " and " + end + " is " + str(calc_distance))
 
         if float(calc_distance) > 10:
-            if pos not in self.distance_error.keys():
+            if pos not in list(self.distance_error.keys()):
                 self.distance_error[pos] = (tk.Label(self.chosen_own_link, text='too big!', foreground="red"))
                 self.distance_error[pos].grid(column=5, row=pos + 3)
                 self.list_hint_distance.append(Pmw.Balloon(self.chosen_own_link, relmouse="both"))
@@ -650,7 +650,7 @@ class PyLink:
                                                                "bad length of bridge or Ca-Ca bonds' should be "
                                                                "ticked.", self.hint_width))
         else:
-            if pos in self.distance_error.keys():
+            if pos in list(self.distance_error.keys()):
                 self.distance_error[pos].grid_forget()
                 del self.distance_error[pos]
 
@@ -769,8 +769,8 @@ class PyLink:
 
         for filename in self._full_path_to_files:
             file = filename.split(os.sep)[-1][:-4]
-            filtered_ions = filter(len, subprocess.Popen((self.prog_converter + filename + " -e").split(" "),
-                                                         stdout=subprocess.PIPE).communicate()[0].splitlines())
+            filtered_ions = list(filter(len, subprocess.Popen((self.prog_converter + filename + " -e").split(" "),
+                                                         stdout=subprocess.PIPE).communicate()[0].splitlines()))
             re_atoms = re.compile("\w*-\d_\w\d*")
 
             if filtered_ions and ("ERROR!!!" in filtered_ions[0] or "WARNING!!!" in filtered_ions[0]):
@@ -1083,13 +1083,13 @@ class PyLink:
             i.setentry("")
 
     def import_macrocomponents(self,):
-        self.macrocomponent_file = tkFileDialog.askopenfilenames(initialdir=os.getcwd(), filetypes=[("TXT", "*.txt")],
+        self.macrocomponent_file = tkinter.filedialog.askopenfilenames(initialdir=os.getcwd(), filetypes=[("TXT", "*.txt")],
                                                                  title="Choose file with macrocomponents")
 
         if not self.macrocomponent_file or None == self.macrocomponent_file:
             return
         elif len(self.macrocomponent_file) > 1:
-            print "  ### Too many files were chosen."
+            print("  ### Too many files were chosen.")
             return
         else:
             try:
@@ -1190,13 +1190,13 @@ class PyLink:
         self.notebook.setnaturalsize()
 
     def import_macrolink_list(self, macrolist, idx):
-        self.macrocomponent_file = tkFileDialog.askopenfilenames(initialdir=os.getcwd(), filetypes=[("TXT", "*.txt")],
+        self.macrocomponent_file = tkinter.filedialog.askopenfilenames(initialdir=os.getcwd(), filetypes=[("TXT", "*.txt")],
                                                                  title="Choose a file with macrocomponent")
 
         if not self.macrocomponent_file or self.macrocomponent_file == None:
             return
         elif len(self.macrocomponent_file) > 1:
-            print "  ### Too many files were chosen."
+            print("  ### Too many files were chosen.")
             return
         else:
             content = open(self.macrocomponent_file[0], "r")
@@ -1234,7 +1234,7 @@ class PyLink:
 
     def _invoke_plugin_action(self, clicked_btn):
         if clicked_btn == "Proceed":
-            print "  PyLink is running..."
+            print("  PyLink is running...")
             self._invoke_program()
         else:
             self.dialog.withdraw()
@@ -1248,7 +1248,7 @@ class PyLink:
                 for filename in self._filenames:
                     self.separate_files_to_directory(self._full_path_to_dir, self.link_directory,
                                                      filename + "_\w*_\d*.(xyz|pdb)")
-            print "  PyLink has been shut down..."
+            print("  PyLink has been shut down...")
 
     ####################################################################################################################
     #                                               EXECUTE PROGRAM 1/2
@@ -1292,8 +1292,8 @@ class PyLink:
 
         for filename in self._full_path_to_files:
             file = filename.split(os.sep)[-1][:-4]
-            filtered_bridges = filter(len, subprocess.Popen((self.prog_converter + filename + " -f").split(" "),
-                                                            stdout=subprocess.PIPE).communicate()[0].splitlines())
+            filtered_bridges = list(filter(len, subprocess.Popen((self.prog_converter + filename + " -f").split(" "),
+                                                            stdout=subprocess.PIPE).communicate()[0].splitlines()))
             if not self._is_file_xyz[file]:
                 self.warning_gaps.append([(i.split(" ")[3], i.split(" ")[-3], i.split(" ")[-1]) for i in
                                           filtered_bridges if "WARNING" in i])
@@ -1316,7 +1316,7 @@ class PyLink:
     ####################################################################################################################
 
     def generate_invoking_commands(self):
-        print "  Collecting user's data..."
+        print("  Collecting user's data...")
         arguments = []
 
         curr_page = self.notebook.getcurselection()
@@ -1512,7 +1512,7 @@ class PyLink:
         return args
 
     def generate_components_files(self, arg):
-        print "  Generating component files..."
+        print("  Generating component files...")
         if all(len(ch.get()) == 0 for ch in self.macrolink_list):
             self.raise_popup_menu("There are empty fields in the frame fields. Please fill at least two of them.")
         if not all(len(ch.get()) != 0 for ch in self.macrolink_list[:2]):
@@ -1529,7 +1529,7 @@ class PyLink:
 
                 data = ",".join(sorted(comp.get().replace(",", "").split(" ")))
                 command = self.prog_converter + self._full_path_to_dir + os.sep + macrolink + " " + arg + " " + data
-                print "Creating a component..."
+                print("Creating a component...")
                 res = subprocess.Popen(command.split(" "), stdout=subprocess.PIPE).communicate()[0]
                 if "ERROR!!!" in res:
                     err_msg = res.split("ERROR!!!")[1]
@@ -1551,7 +1551,7 @@ class PyLink:
             self.raise_popup_menu("An error occurred durning generation of file. Make sure you provided correct data.")
 
     def generate_bondfile(self):
-        print "  Composing a bondfile from given component..."
+        print("  Composing a bondfile from given component...")
         output_file = open(self._full_path_to_dir + os.sep + "bondfile.txt", "w")
         macro_names = []
         reg = re.compile("(\d)*_[\w]_[\d]*")
@@ -1584,7 +1584,7 @@ class PyLink:
         return macro_names
 
     def convert_bondfile_to_components(self):
-        print "  Generating component file..."
+        print("  Generating component file...")
         macrolink = self._filenames[0]
         command = self.prog_converter + self._full_path_to_dir + os.sep + macrolink + " -x " + self._full_path_to_dir \
                   + os.sep + "bondfile.txt"
@@ -1644,7 +1644,7 @@ class PyLink:
                 shutil.move(os.path.join(source, filename), os.path.join(target, filename))
 
     def find_links(self):
-        print "  Calculating links..."
+        print("  Calculating links...")
         pool = mp.Pool(processes=mp.cpu_count())
         manager = mp.Manager()
         shared_dict = manager.dict()
@@ -1664,7 +1664,7 @@ class PyLink:
         self.intersections = {}
         self.probabilistic_surface_idx = {}
 
-        for comb in self.selected_chains_links.keys():
+        for comb in list(self.selected_chains_links.keys()):
             comb = self.selected_chains_links[comb]
             if self.is_macrolink:
                 chains = ["(" + str(_ + 1) + ")" for _ in range(len(comb))]
@@ -1689,8 +1689,8 @@ class PyLink:
                     pos = 0
                     intersections = ["" for _ in range(len(ch))]
 
-                    for is_crossed in xrange(len(ch)):
-                        for crossing in xrange(is_crossed + 1, len(ch)):
+                    for is_crossed in range(len(ch)):
+                        for crossing in range(is_crossed + 1, len(ch)):
                             for cr in retrieved_inters[pos].split(" "):
                                 if cr != "":
                                     intersections[is_crossed] += cr + ch[crossing] + ", "
@@ -1766,8 +1766,8 @@ class PyLink:
                 else:
                     self.purge_lmknots(hashcode + "_")
                     self.can_be_smoothed[cmb + str(idx)] = [False, None]
-                    print " WARNING! Change of topology for ", file + chain, " topology", topology, \
-                        ". Smoothing will not be available."
+                    print(" WARNING! Change of topology for ", file + chain, " topology", topology, \
+                        ". Smoothing will not be available.")
 
     def calculate_deterministic_smoothing(self):
         approach = " 0"
@@ -1840,7 +1840,7 @@ class PyLink:
                         self.can_be_smoothed[elem] = [False, None]
                 else:
                     self.can_be_smoothed[filechains[0]] = [False, None]
-                print " WARNING! Change of topology for ", file + chain, ". Smoothing will not be available"
+                print(" WARNING! Change of topology for ", file + chain, ". Smoothing will not be available")
 
     def purge_lmknots(self, hc=""):
         if hc + "EMCode.txt" in os.listdir(os.getcwd()):
@@ -1858,7 +1858,7 @@ class PyLink:
         return fixed_process
 
     def calculate_smoothed_structures(self):
-        if not all(val == False for val in self.can_be_smoothed.values()):
+        if not all(val == False for val in list(self.can_be_smoothed.values())):
             ions_in_links = False
 
             for filechain in self.can_be_smoothed:
@@ -1902,7 +1902,7 @@ class PyLink:
                                                  "_ch\d*(ADD)*_")
 
     def separate_link_files_to_hashdirectories(self):
-        print "  Separating hashfiles to proper directories..."
+        print("  Separating hashfiles to proper directories...")
 
         for comb in self.output_data:
             curr_hash = self.output_data[comb][1]
@@ -1910,7 +1910,7 @@ class PyLink:
             self.move_files_to_polymer_directory(hash_link_dir, curr_hash)
 
     def purge_main_directory(self):
-        print "  Purging main directory..."
+        print("  Purging main directory...")
         reg = "(_extracted.pdb|_EMCode.txt|_LMKNOT.txt|_glns.txt|(_)*inters(_OUT)*.txt|_(s|ch)\d(ADD)*_(\d*\w*).pdb_\w_L(-)*\d*-(-)*\d*_cl\d*(_sm\d*)*.(jm|xyz))"
 
         for file in os.listdir(system_working_directory):
@@ -1993,7 +1993,7 @@ class PyLink:
             rows[-1].grid(column=1 + idx, row=0)
 
     def create_protein_column(self):
-        protein_col_list = [self.selected_chains_links.keys()[0]] if self.is_macrolink else self.selected_chains_links.keys()
+        protein_col_list = [list(self.selected_chains_links.keys())[0]] if self.is_macrolink else list(self.selected_chains_links.keys())
 
         for idx, filechain in enumerate(sorted(protein_col_list)):
             btn_name = "Details" if self.is_macrolink else filechain
@@ -2015,7 +2015,7 @@ class PyLink:
         height = 1
 
         if self.selected_chains_links:
-            protein_row_list = [self.selected_chains_links.keys()[0]] if self.is_macrolink else self.selected_chains_links
+            protein_row_list = [list(self.selected_chains_links.keys())[0]] if self.is_macrolink else self.selected_chains_links
             for filechain in protein_row_list:
                 row_element = []
                 comb = self.selected_chains_links[filechain]
@@ -2041,7 +2041,7 @@ class PyLink:
                 row += 1
 
     def remove_trivial_directories(self):
-        print "  Removing useless link directories..."
+        print("  Removing useless link directories...")
         hash_dirs = []
         for key in self.selected_chains_links:
             hash_dirs.append(self.output_data[self.selected_chains_links[key]][1])
@@ -2055,7 +2055,7 @@ class PyLink:
         self.link_inf_group_all_links.grid(column=1, row=0, padx=5, pady=5)
 
         self.protein_all_links = Pmw.ScrolledFrame(self.link_inf_group_all_links.interior(), hull_width=300, usehullsize=1,
-                                                   hull_height=90 + (len(self.selected_chains_links.keys())*10))
+                                                   hull_height=90 + (len(list(self.selected_chains_links.keys()))*10))
         self.protein_all_links.grid(sticky='swen', column=0, row=0, padx=5, pady=5)
 
         comb_title = tk.Label(self.protein_all_links.interior(), text="Combination", width=20,
@@ -2081,7 +2081,7 @@ class PyLink:
 
     def create_macroexplanation_interior(self):
         macroexplanation = ""
-        for idx, filechain in enumerate(self.output_data.keys()[0]):
+        for idx, filechain in enumerate(list(self.output_data.keys())[0]):
             filechain = filechain.split(" ")[0]
             macroexplanation += "Component " + str(idx + 1) + " = " + filechain + "\n"
 
@@ -2625,7 +2625,7 @@ class PyLink:
                     cmd.show(representation="sticks", selection="BR_" + chain + "_" + bridge[0] + "_" + bridge[1])
                 cmd.color(color=self.colors_of_sequence[id], selection="SEQ_" + chain + "_" + bridge[0] + "_" + bridge[1])
                 cmd.deselect()
-            print "  Surfaces drawn in PyMOL..."
+            print("  Surfaces drawn in PyMOL...")
             cmd.center(selection=pymol_filename + "_" + chain)
             cmd.orient(selection=pymol_filename + "_" + chain)
         cmd.clip(mode="slab", distance="1000")
@@ -2692,7 +2692,7 @@ class PyLink:
         neg_pierc = ""
         for elem in self.chain_array_rows[self.displayed_link][3:]:
             piercings += str(elem.get("1.0", "end-1c")) + ", "
-        piercings = filter(len, "".join(piercings).split(", "))
+        piercings = list(filter(len, "".join(piercings).split(", ")))
 
         if len(piercings) != 1:
             for pierc in piercings:
@@ -3004,7 +3004,7 @@ class PyLink:
                     self.link_inf_surface_bridges[i].deselect()
             if any(elem.get() == 0 for elem in self.link_inf_is_surface_displayed[1:]):
                 self.link_inf_surface_button.deselect()
-            print "  Surface without area of triangulation showed..."
+            print("  Surface without area of triangulation showed...")
 
     def fix_bridges(self, br):
         """ Method to fix bridges in case there are negative indices"""
@@ -3188,7 +3188,7 @@ class PyLink:
             cmd.set(name="two_sided_lighting", value=1)
             cmd.set(name="sphere_color", value="orange", selection="all")
             cmd.set(name="stick_color", value="orange", selection="all")
-            print "  Smoothed chain and bridges drawn in PyMOL..."
+            print("  Smoothed chain and bridges drawn in PyMOL...")
         else:
             cmd.delete(name="SM_*")
             cmd.delete(name="SURF_SM_*")
@@ -3331,7 +3331,7 @@ class PyLink:
         gln_matrices_canvas._tkcanvas.pack(side=tk.TOP, fill=tk.BOTH, expand=1)
         gln_matrices_canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
         gln_matrices_canvas.show()
-        print "  GLN matrices displayed..."
+        print("  GLN matrices displayed...")
 
     def generate_gln_deterministic(self, cnt, link_dir):
         comb = self.selected_chains_links[self.displayed_filechain]
@@ -3407,7 +3407,7 @@ def _calculate_links(idx, command, out_data, sel_chains_links, complex_chains_li
         combination = global_combinations[idx]
         num_comp = str(len(combination))
         ncuc = call_ncuc(hashcode, num_comp, 1)
-        process = filter(len, ncuc.split(" "))
+        process = list(filter(len, ncuc.split(" ")))
         if process and process[0] != "\n":
             for id in range(len(process[3:])):
                 process[id + 3] = process[id + 3].replace("X", " ")
@@ -3459,8 +3459,8 @@ def call_homfly(command):
     try:
         return subprocess.Popen(command.split(" "), stdout=subprocess.PIPE).communicate()[0]
     except Exception:
-        print "Something went wrong with executable file. Please make sure you changed access permission to " \
-              "it (can be obtained by typing in console chmod a+x __homfly)."
+        print("Something went wrong with executable file. Please make sure you changed access permission to " \
+              "it (can be obtained by typing in console chmod a+x __homfly).")
 
 
 def call_poly(hc):
@@ -3469,8 +3469,8 @@ def call_poly(hc):
         subprocess.Popen((plugin_path + os.sep + "poly " + emcode).split(" "),
                          stdout=subprocess.PIPE).communicate()[0]
     except Exception:
-        print "Something went wrong with executable file. Please make sure you changed access permission to " \
-              "it (can be obtained by typing in console chmod a+x __poly)."
+        print("Something went wrong with executable file. Please make sure you changed access permission to " \
+              "it (can be obtained by typing in console chmod a+x __poly).")
 
 
 def call_ncuc(hc, nc, inters=0):
@@ -3479,5 +3479,5 @@ def call_ncuc(hc, nc, inters=0):
         return subprocess.Popen((plugin_path + os.sep + "ncucLinks " + lmknot + " -X 1 -comp " + nc).split(" "),
                                 stdout=subprocess.PIPE).communicate()[0]
     except Exception:
-        print "Something went wrong with executable file. Please make sure you changed access permission to " \
-              "it (can be obtained by typing in console chmod a+x __ncucLinks)."
+        print("Something went wrong with executable file. Please make sure you changed access permission to " \
+              "it (can be obtained by typing in console chmod a+x __ncucLinks).")

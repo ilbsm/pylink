@@ -35,32 +35,32 @@ def dfs(graph, start, end):
                 continue
             fringe.append((next_state[1], path+next_state))
 def print_namespace(args):              #format namespaces for debug option
-    print color.BOLD + color.UNDERLINE + "Passed arguments:" + color.END
-    print color.BOLD + "input_file\t" + color.END + args.input_file
-    if args.traj : print color.BOLD + "traj\t\t" + color.END + color.GREEN + str(args.traj) + color.END
-    if not args.traj : print color.BOLD + "traj\t\t" + color.END + color.RED + str(args.traj) + color.END
-    if args.fourcolumn : print color.BOLD + "fourcolumn\t" + color.END + color.GREEN + str(args.fourcolumn) + color.END
-    if not args.fourcolumn : print color.BOLD + "fourcolumn\t" + color.END + color.RED + str(args.fourcolumn) + color.END    
-    if args.atoms : print color.BOLD + "atoms\t\t" + color.END + str(args.atoms)
-    if not args.atoms : print color.BOLD + "atoms\t\t" + color.END + color.GREEN + "CA, C3'" + color.END
-    if args.permitted : print color.BOLD + "permitted\t" + color.END + str(args.permitted)
-    if not args.permitted : print color.BOLD + "permitted\t" + color.END + color.GREEN + "All" + color.END
-    print color.BOLD + "debug\t\t" + color.END + str(args.debug)
-    if args.bridges : print color.BOLD + "bridges\t\t" + color.END + color.GREEN + str(args.bridges) + color.END
-    if not args.bridges : print color.BOLD + "bridges\t\t" + color.END + color.RED + str(args.bridges) + color.END    
-    print color.BOLD + "commands\t" + color.END + str(args.commands)
-    if args.extended : print color.BOLD + "extended\t" + color.END + color.GREEN + str(args.extended) + color.END
-    if not args.extended : print color.BOLD + "extended\t" + color.END + color.RED + str(args.extended) + color.END    
-    if args.sbridge : print color.BOLD + "sbridge\t\t" + color.END + color.GREEN + str(args.sbridge) + color.END
-    if not args.sbridge : print color.BOLD + "sbridge\t\t" + color.END + color.RED + str(args.sbridge) + color.END    
-    if args.schain : print color.BOLD + "schain\t\t" + color.END + color.GREEN + str(args.schain) + color.END
-    if not args.schain : print color.BOLD + "schain\t\t" + color.END + color.RED + str(args.schain) + color.END    
-    if args.macro : print color.BOLD + "macro\t\t" + color.END + str(args.macro)
-    if not args.macro : print color.BOLD + "macro\t\t" + color.END + color.RED + str(args.macro) + color.END    
-    if args.xyz : print color.BOLD + "xyz\t\t" + color.END + str(args.xyz)
-    if not args.xyz : print color.BOLD + "xyz\t\t" + color.END + color.RED + str(args.xyz) + color.END  
-    print color.BOLD + "alt location\t" + color.END + str(args.altloc)
-    print "________________________________\n"
+    print(color.BOLD + color.UNDERLINE + "Passed arguments:" + color.END)
+    print(color.BOLD + "input_file\t" + color.END + args.input_file)
+    if args.traj : print(color.BOLD + "traj\t\t" + color.END + color.GREEN + str(args.traj) + color.END)
+    if not args.traj : print(color.BOLD + "traj\t\t" + color.END + color.RED + str(args.traj) + color.END)
+    if args.fourcolumn : print(color.BOLD + "fourcolumn\t" + color.END + color.GREEN + str(args.fourcolumn) + color.END)
+    if not args.fourcolumn : print(color.BOLD + "fourcolumn\t" + color.END + color.RED + str(args.fourcolumn) + color.END)    
+    if args.atoms : print(color.BOLD + "atoms\t\t" + color.END + str(args.atoms))
+    if not args.atoms : print(color.BOLD + "atoms\t\t" + color.END + color.GREEN + "CA, C3'" + color.END)
+    if args.permitted : print(color.BOLD + "permitted\t" + color.END + str(args.permitted))
+    if not args.permitted : print(color.BOLD + "permitted\t" + color.END + color.GREEN + "All" + color.END)
+    print(color.BOLD + "debug\t\t" + color.END + str(args.debug))
+    if args.bridges : print(color.BOLD + "bridges\t\t" + color.END + color.GREEN + str(args.bridges) + color.END)
+    if not args.bridges : print(color.BOLD + "bridges\t\t" + color.END + color.RED + str(args.bridges) + color.END)    
+    print(color.BOLD + "commands\t" + color.END + str(args.commands))
+    if args.extended : print(color.BOLD + "extended\t" + color.END + color.GREEN + str(args.extended) + color.END)
+    if not args.extended : print(color.BOLD + "extended\t" + color.END + color.RED + str(args.extended) + color.END)    
+    if args.sbridge : print(color.BOLD + "sbridge\t\t" + color.END + color.GREEN + str(args.sbridge) + color.END)
+    if not args.sbridge : print(color.BOLD + "sbridge\t\t" + color.END + color.RED + str(args.sbridge) + color.END)    
+    if args.schain : print(color.BOLD + "schain\t\t" + color.END + color.GREEN + str(args.schain) + color.END)
+    if not args.schain : print(color.BOLD + "schain\t\t" + color.END + color.RED + str(args.schain) + color.END)    
+    if args.macro : print(color.BOLD + "macro\t\t" + color.END + str(args.macro))
+    if not args.macro : print(color.BOLD + "macro\t\t" + color.END + color.RED + str(args.macro) + color.END)    
+    if args.xyz : print(color.BOLD + "xyz\t\t" + color.END + str(args.xyz))
+    if not args.xyz : print(color.BOLD + "xyz\t\t" + color.END + color.RED + str(args.xyz) + color.END)  
+    print(color.BOLD + "alt location\t" + color.END + str(args.altloc))
+    print("________________________________\n")
 
 def read_header(pdb_file,args):                          # reading header of PDB file
     input_file = args['input_file']
@@ -69,14 +69,14 @@ def read_header(pdb_file,args):                          # reading header of PDB
         snake()
         sys.exit()
     if not os.path.isfile(input_file):
-        print "Cannot find " + input_file + "! Exiting."
+        print("Cannot find " + input_file + "! Exiting.")
         sys.exit()
     for f in glob.glob(input_file + '_*.pdb'): 
         if f[:6] != 'macro_': os.remove(f)            #removing files on start
     for f in glob.glob(input_file + '_*.xyz'): 
         if f[:6] != 'macro_': os.remove(f)            #removing files on start
     with open(input_file, 'r') as f:
-        if type(debug) is list : print time.strftime("%d %b %H:%M:%S", time.gmtime()) + " File " + input_file + " opened. Analyzing the header."
+        if type(debug) is list : print(time.strftime("%d %b %H:%M:%S", time.gmtime()) + " File " + input_file + " opened. Analyzing the header.")
         for line in f:
             if line[0:6] == 'HEADER': pdb_file.add_header(line)
             if line[0:6] == 'OBSLTE': pdb_file.add_obsolete(line)
@@ -123,7 +123,7 @@ def parse_atoms(args):#models,chains,residues,atoms,debug):
     residues = args['residues']
     atoms = args['atoms']
     debug = args['debug']
-    if type(debug) is list : print time.strftime("%d %b %H:%M:%S", time.gmtime()) +  " Parsing permitted atoms. The values supplied:\n" + color.BOLD + "Models:" + color.END + str(models)  + color.BOLD + "\tChains:" + color.END + str(chains) + color.BOLD + "\tResidues:" + color.END + str(residues) + color.BOLD + "\tAtoms:" + color.END + str(atoms)
+    if type(debug) is list : print(time.strftime("%d %b %H:%M:%S", time.gmtime()) +  " Parsing permitted atoms. The values supplied:\n" + color.BOLD + "Models:" + color.END + str(models)  + color.BOLD + "\tChains:" + color.END + str(chains) + color.BOLD + "\tResidues:" + color.END + str(residues) + color.BOLD + "\tAtoms:" + color.END + str(atoms))
     if not models:
         if args['macro_ends'] or args['macro_close'] or args['xyz'] or args['traj']: permitted_models = ['*']
         else: permitted_models = [1]
@@ -181,7 +181,7 @@ def parse_atoms(args):#models,chains,residues,atoms,debug):
                 break
             elif part: permitted_atoms.append(part)
     permitted_atoms = list(set(permitted_atoms))
-    if type(debug) is list : print time.strftime("%d %b %H:%M:%S", time.gmtime()) +  " Permitted atoms. The values supplied:\n" + color.BOLD + "Models:" + color.END + str(permitted_models)  + color.BOLD + "\tChains:" + color.END + str(permitted_chains) + color.BOLD + "\tResidues:" + color.END + str(permitted_residues) + color.BOLD + "\tAtoms:" + color.END + str(permitted_atoms)
+    if type(debug) is list : print(time.strftime("%d %b %H:%M:%S", time.gmtime()) +  " Permitted atoms. The values supplied:\n" + color.BOLD + "Models:" + color.END + str(permitted_models)  + color.BOLD + "\tChains:" + color.END + str(permitted_chains) + color.BOLD + "\tResidues:" + color.END + str(permitted_residues) + color.BOLD + "\tAtoms:" + color.END + str(permitted_atoms))
     return permitted_models, permitted_chains, permitted_residues, permitted_atoms
 def gen_chain_name(i):
     if not type(i) is int: return '?'
@@ -193,11 +193,11 @@ def gen_chain_name(i):
 def snake():
     try: import pygame, random
     except: 
-        print "Sorry, can't do this for you..."
+        print("Sorry, can't do this for you...")
         sys.exit()
     try: import pygame.locals 
     except:
-        print "Sorry, can't do this for you..."
+        print("Sorry, can't do this for you...")
         sys.exit()
     def collide(x1, x2, y1, y2, w1, w2, h1, h2):
         if x1+w1>x2 and x1<x2+w2 and y1+h1>y2 and y1<y2+h2:return True
@@ -398,7 +398,7 @@ def read_coordinates(pdb_file,args):  # reading coordinates from PDB file
     debug = args['debug']
     permitted_models, permitted_chains, permitted_residues, permitted_atoms = parse_atoms(args)         # decide, which models/chains/residues/atoms to store
     with open(args['input_file'], 'r') as input_file:
-        if type(debug) is list : print time.strftime("%d %b %H:%M:%S", time.gmtime()) +  " File " + args['input_file'] + " opened. Reading the coordinates."
+        if type(debug) is list : print(time.strftime("%d %b %H:%M:%S", time.gmtime()) +  " File " + args['input_file'] + " opened. Reading the coordinates.")
         ###                     # initial values for model
         current_model = 1                   
         store = False
@@ -407,7 +407,7 @@ def read_coordinates(pdb_file,args):  # reading coordinates from PDB file
         if current_model in permitted_models or '*' in permitted_models:
             pdb_file.create_model(current_model)
             store = True
-            if type(debug) is list : print time.strftime("%d %b %H:%M:%S", time.gmtime()) +  color.GREEN + " Found model " + str(current_model) + color.END
+            if type(debug) is list : print(time.strftime("%d %b %H:%M:%S", time.gmtime()) +  color.GREEN + " Found model " + str(current_model) + color.END)
         ###                     # if we have to generate the chain names
         current_chain = 1
         last_index = -99999
@@ -425,7 +425,7 @@ def read_coordinates(pdb_file,args):  # reading coordinates from PDB file
                     if current_model > 1:
                         pdb_file.create_model(current_model)
                         current_chain = 1
-                        if type(debug) is list: print time.strftime("%d %b %H:%M:%S", time.gmtime()) + color.GREEN + " Found model " + str(current_model) + color.END
+                        if type(debug) is list: print(time.strftime("%d %b %H:%M:%S", time.gmtime()) + color.GREEN + " Found model " + str(current_model) + color.END)
                 else: store = False
                 model_created = True
             if current_model > 1 and args['bridges']: break
@@ -443,10 +443,10 @@ def read_coordinates(pdb_file,args):  # reading coordinates from PDB file
                         pdb_file.create_model(current_model)
                         current_chain = 1
                         store = True
-                        if type(debug) is list and current_model > 1: print time.strftime("%d %b %H:%M:%S", time.gmtime()) +  color.GREEN + " Found model " + str(current_model) + color.END
+                        if type(debug) is list and current_model > 1: print(time.strftime("%d %b %H:%M:%S", time.gmtime()) +  color.GREEN + " Found model " + str(current_model) + color.END)
                     else: store = False
                     model_created = True
-                    if type(debug) is list : print time.strftime("%d %b %H:%M:%S", time.gmtime()) +  color.GREEN + " Found model " + str(current_model) + color.END
+                    if type(debug) is list : print(time.strftime("%d %b %H:%M:%S", time.gmtime()) +  color.GREEN + " Found model " + str(current_model) + color.END)
                 if line[21] == ' ':                  # if there is no chain ID but the resID drops down
                     if int(line[22:26]) < last_index: current_chain += 1
                 last_index = int(line[22:26])
@@ -459,10 +459,10 @@ def read_coordinates(pdb_file,args):  # reading coordinates from PDB file
                         pdb_file.create_model(current_model)
                         current_chain = 1
                         store = True
-                        if type(debug) is list and current_model > 1: print time.strftime("%d %b %H:%M:%S", time.gmtime()) +  color.GREEN + " Found model " + str(current_model) + color.END
+                        if type(debug) is list and current_model > 1: print(time.strftime("%d %b %H:%M:%S", time.gmtime()) +  color.GREEN + " Found model " + str(current_model) + color.END)
                     else: store = False
                     model_created = True
-                    if type(debug) is list : print time.strftime("%d %b %H:%M:%S", time.gmtime()) +  color.GREEN + " Found model " + str(current_model) + color.END
+                    if type(debug) is list : print(time.strftime("%d %b %H:%M:%S", time.gmtime()) +  color.GREEN + " Found model " + str(current_model) + color.END)
                 if line[21] == ' ':                  # if there is no chain ID but the resID drops
                     if int(line[22:26]) < last_index: current_chain += 1
                 last_index = int(line[22:26])
@@ -481,7 +481,7 @@ def read_coordinates(pdb_file,args):  # reading coordinates from PDB file
         pdb_file.clean(current_model,args['altloc'],permitted_atoms,permitted_residues)             #cleaning the data
         result += str(print_coordinates(pdb_file,current_model,args))
         model_cleaned = True
-    if type(debug) is list : print time.strftime("%d %b %H:%M:%S", time.gmtime()) +  " File " + args['input_file'] + " done with the coordinates."
+    if type(debug) is list : print(time.strftime("%d %b %H:%M:%S", time.gmtime()) +  " File " + args['input_file'] + " done with the coordinates.")
     if args['output'][0] == 'files' : pdb_file.add_ends()
     return result
 def print_coordinates(pdb_file,model,args):       # printing coordinates to xyz files
@@ -494,8 +494,8 @@ def print_coordinates(pdb_file,model,args):       # printing coordinates to xyz 
     result_pdb = pdb_file.models['mod' + str(model)].print_pdb()[:-1]
     result_xyz = pdb_file.models['mod' + str(model)].print_xyz(args['fourcolumn'],args['traj'],args['columns'],args['hetatoms'])
     if output == 'screen':
-        if not args['oxyz']: print result_pdb
-        if not args['opdb']: print result_xyz
+        if not args['oxyz']: print(result_pdb)
+        if not args['opdb']: print(result_xyz)
         return
     if output == 'pipe':
         if not args['oxyz'] and not args['opdb']:
@@ -525,10 +525,10 @@ def macrolink_ends_check_distances(loop_arrangement,chains,distance_matrix):
     for k in range(len(loop_arrangement[0])-1):
         d = distance_matrix[str(loop_arrangement[0][k])+str(loop_arrangement[1][k]) + '-' + str(loop_arrangement[0][k+1])+macrolink_rev_termini(str(loop_arrangement[1][k]))]
         if d > 10:
-            print 'WARNING!!! It is possible that given chains do not form a macrocomponent. The distance between connected termini is ' + str(d) + ' between ' + chains[k] + ' and ' + chains[k+1] + ' for the best loop!'
+            print('WARNING!!! It is possible that given chains do not form a macrocomponent. The distance between connected termini is ' + str(d) + ' between ' + chains[k] + ' and ' + chains[k+1] + ' for the best loop!')
     d = distance_matrix[str(loop_arrangement[0][-1])+str(loop_arrangement[1][-1]) + '-' + str(loop_arrangement[0][0])+macrolink_rev_termini(str(loop_arrangement[1][0]))]
     if d > 10:
-        print 'WARNING!!! It is possible that given chains do not form a macrocomponent. The distance between connected termini is ' + str(d) + ' between ' + chains[-1] + ' and ' + chains[0] + ' for the best loop!'
+        print('WARNING!!! It is possible that given chains do not form a macrocomponent. The distance between connected termini is ' + str(d) + ' between ' + chains[-1] + ' and ' + chains[0] + ' for the best loop!')
     return
 def make_macrolink_ends_presentation(loop_arrangements,termini):
     presentation = ''
@@ -547,7 +547,7 @@ def connected_print_xyz(coordinates,atom_list,debug,output='files'):
             result += str(k+1) + ' ' + ' '.join(coordinates[atom_list[k]]) + '\n'
         if len(coordinates[atom_list[k]]) != 3 and atom_list[k].split('_')[-1] != 'closure':          
             result += (str(coordinates[atom_list[k]][3]) + ' ' + ' '.join(coordinates[atom_list[k]][:3]) + ' ' + ' '.join(coordinates[atom_list[k]][4:])).strip() + '\n'
-    if output == 'screen': print result
+    if output == 'screen': print(result)
     if output == 'files':
         with open('macrolink_ends_result.xyz','w') as myfile: myfile.write(result)
         return
@@ -584,7 +584,7 @@ def connected_print_pdb(coordinates,atom_list,debug,output='files'):            
                                     "atom": tot, "res_name": res_name, "res_nr": tot,  "x": float(last[0]),
                                     "y": float(last[1]), "z": float(last[2])}
     result += "END"
-    if output == 'screen': print result
+    if output == 'screen': print(result)
     if output == 'files':
         with open('macrolink_ends_result.pdb','w') as myfile: myfile.write(result)
         return
@@ -653,7 +653,7 @@ def print_shortcut(cycle,output='screen'):
     result = '-'.join(cycle)
     result = re.sub('-b-',' <-> ',re.sub('-c-',' ... ',result))
     if output == 'screen':
-        print result
+        print(result)
         return
     if output == 'files':
         return
@@ -680,7 +680,7 @@ def print_macrolink(pdb_file,args):        # printing components chosen automati
         k += 1
     for x in tmp:
         if not(x.split('_')[0].isdigit() and len(x.split('_')) == 2 and len(x.split('_')[1]) == 1 and x.split('_')[1].isalpha()):     #check input 
-            print "Wrong input format. Expected 'ModelNumber(int)_Chain(alphanumeric,1char)'. Got " + x + ". Exiting."
+            print("Wrong input format. Expected 'ModelNumber(int)_Chain(alphanumeric,1char)'. Got " + x + ". Exiting.")
             sys.exit()
     if not args['columns']: columns = []
     else: columns = args['columns']    
@@ -690,7 +690,7 @@ def print_macrolink(pdb_file,args):        # printing components chosen automati
     args['output'] = ['pipe_xyz']
     result = read_coordinates(PDB,args)
     for atom in result.splitlines(): coordinates['_'.join(atom.split()[:3])] = atom.split()[3:]
-    permutations = [[0] + list(perm) for perm in itertools.permutations(range(1,len(tmp)))]
+    permutations = [[0] + list(perm) for perm in itertools.permutations(list(range(1,len(tmp))))]
     if args['macro_ends']:
         distance_matrix = {}     # distance matrix
         termini = []
@@ -736,22 +736,22 @@ def print_macrolink(pdb_file,args):        # printing components chosen automati
             test_arrangements.append([macrolink,d])
         test_arrangements.sort(key=lambda x:x[1])
         if not test_arrangements or test_arrangements[0] == [[], 999999]: 
-            print "ERROR!!! It seems that there is no clear way to connect the chain or the chains supplied are to far away oto form a component. If you desire to connect these chains, please supply the list of inter-chain connections. I cannot guess them for you..."
+            print("ERROR!!! It seems that there is no clear way to connect the chain or the chains supplied are to far away oto form a component. If you desire to connect these chains, please supply the list of inter-chain connections. I cannot guess them for you...")
             return
         presentation = macrolink_close_make_presentation(test_arrangements[0],tmp)
     shortcut = print_shortcut(presentation,output='pipe')[0]
     atom_list = make_atom_list(shortcut,coordinates)
     chains = re.sub(',','_',re.sub('_','',chains))
-    print chains + '\t\t' + shortcut
+    print(chains + '\t\t' + shortcut)
     result_xyz = connected_print_xyz(coordinates,atom_list,debug=args['debug'],output='pipe')
     result_pdb = connected_print_pdb(coordinates,atom_list,debug=args['debug'],output='pipe')
     if output == 'screen': 
         if not args['opdb']:
-            print result_xyz
+            print(result_xyz)
         if not args['opdb'] and not args['oxyz']:
-            print '================================================================'
+            print('================================================================')
         if not args['oxyz']:
-            print result_pdb
+            print(result_pdb)
         return
     if output == 'files':
         if not args['opdb']:
@@ -781,10 +781,10 @@ def print_commands(PDB,args):                         # printing commands for Wa
     result = result[:-1]
     if args['output'][0] == 'pipe':
         return result
-    print result
+    print(result)
     return
 def print_cross_bridges(PDB,args):                    # printing cross-chain bridges to screen to screen
-    if type(args['debug']) is list: print time.strftime("%d %b %H:%M:%S", time.gmtime()) +  color.CYAN + " Printing cross-chains bridges" + color.END
+    if type(args['debug']) is list: print(time.strftime("%d %b %H:%M:%S", time.gmtime()) +  color.CYAN + " Printing cross-chains bridges" + color.END)
     result = ''
     for bridge in PDB.bridges:
         if bridge in PDB.cross_bridge_list:
@@ -793,7 +793,7 @@ def print_cross_bridges(PDB,args):                    # printing cross-chain bri
     result = result[:-1]
     if args['output'] == 'pipe':
         return result
-    print result
+    print(result)
     return
 
 #added by Ola G
@@ -908,10 +908,10 @@ def print_extended_bridges(pdb_file,args):
         for atom in result.splitlines():  coordinates['_'.join(atom.split()[:3])] = atom.split()[3:]
         for bridge in bridges:
              if bridge[0]+'_'+bridge[1] not in coordinates and 'pipe' not in output:
-                print "ERROR!!! It seems that there is no residue " + bridges_residues[bridge[0] + '_' + bridge[1]] + '-' + bridge[0] + bridge[1] + ". Please fix this."
+                print("ERROR!!! It seems that there is no residue " + bridges_residues[bridge[0] + '_' + bridge[1]] + '-' + bridge[0] + bridge[1] + ". Please fix this.")
                 sys.exit()
              if bridge[2]+'_'+bridge[3] not in coordinates and 'pipe' not in output:
-                print "ERROR!!! It seems that there is no residue " + bridges_residues[bridge[2] + '_' + bridge[3]] + '-' + bridge[2] + bridge[3] + ". Please fix this."
+                print("ERROR!!! It seems that there is no residue " + bridges_residues[bridge[2] + '_' + bridge[3]] + '-' + bridge[2] + bridge[3] + ". Please fix this.")
                 sys.exit()
         if args['closure']:                                                     # adding 'bridge' via closure. What type of closure will be decided later.
             for chain in chains: 
@@ -924,7 +924,7 @@ def print_extended_bridges(pdb_file,args):
                 bridges_residues[chain+'_closure'] = 'CLS'
         cycles = find_cycles(pdb_file,bridges,coordinates,args,clean='any')
     if len(cycles) == 0 and 'pipe' not in output: 
-        print 'ERROR!!! There is no extended loop in this protein.'
+        print('ERROR!!! There is no extended loop in this protein.')
         sys.exit()
     atom_list = []
     shortcut = []
@@ -947,16 +947,16 @@ def print_extended_bridges(pdb_file,args):
     result_pdb = [result_pdb[k] for k,l in extended_length]
     for k in range(len(extended_loops)):
         chh = find_chains_in_cycle(cycles[extended_length[k][0]])
-        if 'pipe' not in output: print str(k) + '\t' + code + '.pdb_' + chh + '_' + str(k) + '.xyz' + '\t' + shortcut[k]
+        if 'pipe' not in output: print(str(k) + '\t' + code + '.pdb_' + chh + '_' + str(k) + '.xyz' + '\t' + shortcut[k])
         if output == 'screen': 
             if not args['opdb']:
-                print result_xyz[k]
+                print(result_xyz[k])
             if not args['opdb'] and not args['oxyz']:
-                print '================================================================'
+                print('================================================================')
             if not args['oxyz']:
-                print result_pdb[k]
+                print(result_pdb[k])
         if output == 'files':
-            if type(args['debug']) is list: print time.strftime("%d %b %H:%M:%S", time.gmtime()) +  ' Saving extended loops to files "' + code + '.pdb_' + chh + '_' + str(k) + '.xyz". Cycles in shorted version are (<-> denotes bridge):'
+            if type(args['debug']) is list: print(time.strftime("%d %b %H:%M:%S", time.gmtime()) +  ' Saving extended loops to files "' + code + '.pdb_' + chh + '_' + str(k) + '.xyz". Cycles in shorted version are (<-> denotes bridge):')
             if not args['opdb']:
                 if 'closure' in shortcut[k]: save_closure_xyz(code + '.pdb_' + chh + '_' + str(k) + '.xyz',result_xyz[k],args)
                 else:
@@ -983,14 +983,14 @@ def print_extended_bridges(pdb_file,args):
         return extended_loops, result_xyz, result_pdb
     return
 def suggest_bridges(PDB,args):                        # printing close deterministic loops for further link analysis to screen
-    if type(args['debug']) is list: print time.strftime("%d %b %H:%M:%S", time.gmtime()) + color.CYAN + " Suggesting bridges" + color.END
+    if type(args['debug']) is list: print(time.strftime("%d %b %H:%M:%S", time.gmtime()) + color.CYAN + " Suggesting bridges" + color.END)
     bridges = []
     possible = []
     for bridge in PDB.bridges:
         if bridge not in PDB.cross_bridge_list and PDB.bridges[bridge].type != 'OTHER': bridges.append(bridge)
-    for perm in itertools.combinations(range(len(bridges)),2): possible.append([bridges[perm[0]],bridges[perm[1]]])
-    for perm in itertools.combinations(range(len(bridges)),3): possible.append([bridges[perm[0]],bridges[perm[1]],bridges[perm[2]]])
-    for perm in itertools.combinations(range(len(bridges)),4): possible.append([bridges[perm[0]],bridges[perm[1]],bridges[perm[2]],bridges[perm[3]]])
+    for perm in itertools.combinations(list(range(len(bridges))),2): possible.append([bridges[perm[0]],bridges[perm[1]]])
+    for perm in itertools.combinations(list(range(len(bridges))),3): possible.append([bridges[perm[0]],bridges[perm[1]],bridges[perm[2]]])
+    for perm in itertools.combinations(list(range(len(bridges))),4): possible.append([bridges[perm[0]],bridges[perm[1]],bridges[perm[2]],bridges[perm[3]]])
     if len(possible) == 0 : return
     result = ''
     name = re.sub('.pdb', '', args['input_file'])
@@ -1006,14 +1006,14 @@ def suggest_bridges(PDB,args):                        # printing close determini
         result = result[:-1] + '\n'
     if args['output'] == 'pipe':
         return result[:-1]
-    print result[:-1]
+    print(result[:-1])
     return
 def close_chains(pdb_file,k,j,args):
     chain1 = pdb_file.models[pdb_file.model_list[0]].chains[pdb_file.models[pdb_file.model_list[0]].chain_list[k]]
     chain2 = pdb_file.models[pdb_file.model_list[0]].chains[pdb_file.models[pdb_file.model_list[0]].chain_list[j]]
     return bool(float(args['factor'][0])*(chain1.R + chain2.R) > sqrt(sum([(x-y)**2 for x, y in zip(chain1.com,chain2.com)])))
 def suggest_chains(PDB,args):                         # printing close chains for further link analysis to screen
-    if type(args['debug']) is list: print time.strftime("%d %b %H:%M:%S", time.gmtime()) +  color.CYAN + " Suggesting chains" + color.END
+    if type(args['debug']) is list: print(time.strftime("%d %b %H:%M:%S", time.gmtime()) +  color.CYAN + " Suggesting chains" + color.END)
     chains = []
     for k in range(len(PDB.models[PDB.model_list[0]].chains)):
         for j in range(k):
@@ -1036,7 +1036,7 @@ def suggest_chains(PDB,args):                         # printing close chains fo
         result = result[:-1] + '\n'
     if args['output'] == 'pipe':
         return result[:-1]
-    print result[:-1]
+    print(result[:-1])
     return
 def make_atom_list(cycle,coordinates):
     atom_list = []
@@ -1091,10 +1091,10 @@ def find_cycles(pdb_file,bridges,coordinates,args,clean):
     chain_residues = {}
     for bridge in bridges:                                     # create bridge part of the graph and check if residues exist
         if bridge[0]+'_'+bridge[1] not in coordinates and bridge[1] != 'closure':
-            print "ERROR!!! It seems that there is no residue " + bridge[0] + '_' + bridge[1] + ". Please fix this."
+            print("ERROR!!! It seems that there is no residue " + bridge[0] + '_' + bridge[1] + ". Please fix this.")
             sys.exit()
         if bridge[2]+'_'+bridge[3] not in coordinates and bridge[3] != 'closure':
-            print "ERROR!!! It seems that there is no residue " + bridge[2] + '_' + bridge[3] + ". Please fix this."
+            print("ERROR!!! It seems that there is no residue " + bridge[2] + '_' + bridge[3] + ". Please fix this.")
             sys.exit()
         if bridge[0]+'_'+bridge[1] not in graph: graph[bridge[0]+'_'+bridge[1]] = [['b',bridge[2]+'_'+bridge[3]]]
         else: graph[bridge[0]+'_'+bridge[1]].append(['b',bridge[2]+'_'+bridge[3]])
@@ -1102,7 +1102,7 @@ def find_cycles(pdb_file,bridges,coordinates,args,clean):
         else: graph[bridge[2]+'_'+bridge[3]].append(['b',bridge[0]+'_'+bridge[1]])
         if bridge[1] != 'closure' and bridge[3] != 'closure':
             d = dist(coordinates[bridge[0]+'_'+bridge[1]][:3],coordinates[bridge[2]+'_'+bridge[3]][:3])
-            if d > 10: print "WARNING!!! The bridge " + bridge[0]+bridge[1] + ' <-> ' + bridge[2]+bridge[3] + ' seems to be wrong as its length is equal ' + str(d) + '.'
+            if d > 10: print("WARNING!!! The bridge " + bridge[0]+bridge[1] + ' <-> ' + bridge[2]+bridge[3] + ' seems to be wrong as its length is equal ' + str(d) + '.')
         if bridge[0] in chain_residues and bridge[1] != 'closure': chain_residues[bridge[0]].append(int(bridge[1]))
         if bridge[0] not in chain_residues and bridge[1] != 'closure': chain_residues[bridge[0]] = [int(bridge[1])]
         if bridge[2] in chain_residues and bridge[3] != 'closure': chain_residues[bridge[2]].append(int(bridge[3]))
@@ -1116,47 +1116,47 @@ def find_cycles(pdb_file,bridges,coordinates,args,clean):
                 graph[key+'_'+str(residue_list[k])].append(['c',key+'_'+str(residue_list[k+1])])
                 graph[key+'_'+str(residue_list[k+1])].append(['c',key+'_'+str(residue_list[k])])
     if type(args['debug']) is list and ('merge' in args['debug'] or 'extended' in args['debug'] or 'macro' in args['debug']): 
-        print time.strftime("%d %b %H:%M:%S", time.gmtime()) +  ' The dictionary formed during search for loops:'
+        print(time.strftime("%d %b %H:%M:%S", time.gmtime()) +  ' The dictionary formed during search for loops:')
         for key in list(graph):
-            print '\t' + str(key) + '\t' + str(graph[key])
-        print '\t________________________________'
-    if type(args['debug']) is list: print time.strftime("%d %b %H:%M:%S", time.gmtime()) + ' Searching for cycles.'
+            print('\t' + str(key) + '\t' + str(graph[key]))
+        print('\t________________________________')
+    if type(args['debug']) is list: print(time.strftime("%d %b %H:%M:%S", time.gmtime()) + ' Searching for cycles.')
     cycles = [path for node in graph for path in dfs(graph, node, node)]
-    if type(args['debug']) is list: print time.strftime("%d %b %H:%M:%S", time.gmtime()) + ' Found ' + str(len(cycles)) + ' cycles. Cleaning cycles.'
+    if type(args['debug']) is list: print(time.strftime("%d %b %H:%M:%S", time.gmtime()) + ' Found ' + str(len(cycles)) + ' cycles. Cleaning cycles.')
     cycles = clean_cycles(cycles,bridges,clean)
-    if type(args['debug']) is list: print time.strftime("%d %b %H:%M:%S", time.gmtime()) + ' Cycles cleaned. Found ' + str(len(cycles)) + ' clean cycles.'
+    if type(args['debug']) is list: print(time.strftime("%d %b %H:%M:%S", time.gmtime()) + ' Cycles cleaned. Found ' + str(len(cycles)) + ' clean cycles.')
     if type(args['debug']) is list and ('merge' in args['debug'] or 'extended' in args['debug']): 
-        print 'These are:'
+        print('These are:')
         for k in range(len(cycles)):
-            print cycles[k]
+            print(cycles[k])
     return cycles
 def merge_xyz_component(pdb_file,current_component,coordinates,bridges,output,args):
     if type(args['debug']) is list:
-        print time.strftime("%d %b %H:%M:%S", time.gmtime()) + ' Component ' + str(current_component) + '. I found the following bridges:'
-        for bridge in bridges: print bridge[0] + '_' + bridge[1] + ' <-> ' + bridge[2] + '_' + bridge[3]
-        print time.strftime("%d %b %H:%M:%S", time.gmtime()) + ' Creating dictionary.'
+        print(time.strftime("%d %b %H:%M:%S", time.gmtime()) + ' Component ' + str(current_component) + '. I found the following bridges:')
+        for bridge in bridges: print(bridge[0] + '_' + bridge[1] + ' <-> ' + bridge[2] + '_' + bridge[3])
+        print(time.strftime("%d %b %H:%M:%S", time.gmtime()) + ' Creating dictionary.')
     cycles = find_cycles(pdb_file,bridges,coordinates,args,clean='all')
     if len(cycles) > 1: 
-        print 'ERROR!!! The bridges given in component ' + str(current_component) + ' form ' + str(len(cycles)) + ' valid components! Please specialize!'
+        print('ERROR!!! The bridges given in component ' + str(current_component) + ' form ' + str(len(cycles)) + ' valid components! Please specialize!')
         sys.exit()
     if len(cycles) == 0: 
-        print 'ERROR!!! The bridges given in component ' + str(current_component) + ' cannot form a component! Please fix them!'
+        print('ERROR!!! The bridges given in component ' + str(current_component) + ' cannot form a component! Please fix them!')
         sys.exit()
     shortcut = print_shortcut(cycles[0],output='pipe')[0]
     atom_list = make_atom_list(shortcut,coordinates)
-    print str(current_component) + '\t\t' + shortcut
+    print(str(current_component) + '\t\t' + shortcut)
     result_xyz = connected_print_xyz(coordinates,atom_list,debug=args['debug'],output='pipe')
     result_pdb = connected_print_pdb(coordinates,atom_list,debug=args['debug'],output='pipe')
     if output == 'screen': 
         if not args['opdb']:
-            print result_xyz
+            print(result_xyz)
         if not args['opdb'] and not args['oxyz']:
-            print '================================================================'
+            print('================================================================')
         if not args['oxyz']:
-            print result_pdb
+            print(result_pdb)
         return
     if output == 'files':
-        if type(args['debug']) is list: print time.strftime("%d %b %H:%M:%S", time.gmtime()) + ' Saving cycles to files "component_' + str(current_component) +'.xyz". Cycles in shorted version are (<-> denotes bridge):'
+        if type(args['debug']) is list: print(time.strftime("%d %b %H:%M:%S", time.gmtime()) + ' Saving cycles to files "component_' + str(current_component) +'.xyz". Cycles in shorted version are (<-> denotes bridge):')
         if not args['opdb']:
             with open('component_' + str(current_component) + '.xyz','w') as output_file:
                 output_file.write(result_xyz)
@@ -1177,9 +1177,9 @@ def merge_xyz(pdb_file,args):                         # printing components for 
     coordinates = {}
     output = args['output'][0]
     debug = args['debug']
-    if type(debug) is list: print time.strftime("%d %b %H:%M:%S", time.gmtime()) +  color.CYAN + " Preparing macrocomponents with the connections supplied by the user" + color.END
+    if type(debug) is list: print(time.strftime("%d %b %H:%M:%S", time.gmtime()) +  color.CYAN + " Preparing macrocomponents with the connections supplied by the user" + color.END)
     if not os.path.isfile(args['xyz'][0]):
-        print time.strftime("%d %b %H:%M:%S", time.gmtime()) +  " No " + args['xyz'][0] + " file. Cannot do merging of the chain for macrocomponent analysis."
+        print(time.strftime("%d %b %H:%M:%S", time.gmtime()) +  " No " + args['xyz'][0] + " file. Cannot do merging of the chain for macrocomponent analysis.")
         return
     with open(args['xyz'][0], 'r') as f:
         for line in f:
@@ -1225,7 +1225,7 @@ def print_summary(pdb_file,output='screen'):          # print summary to screen
     result += color.BOLD + "Number of bridges:\t\t" + color.END + str(len(pdb_file.bridge_list)) + '\n'
     result += color.BOLD + "Number of cross-chain bridges:\t" + color.END + str(pdb_file.cross_bridges_number) + '\n'
     if output == 'screen':
-        print result
+        print(result)
         return
     if output == 'file':
         with open(PDB.code + '.log','a') as myfile:
@@ -1394,7 +1394,7 @@ class PDB_File:
                 myfile.write('END')
     #### Searching
     def find_atom(self,model,chain,residue,name):
-        print model,chain,residue,name
+        print(model,chain,residue,name)
         if model == 0: return self.models[self.model_list[0]].chains[chain].residues[residue].atoms[name]
         return self.models['mod' + str(model)].chains[chain].residues[residue].atoms[name]
     def find_residue(self,model,chain,residue):
@@ -1467,33 +1467,33 @@ class PDB_File:
     #### Printing part
     def informations(self,debug):
         if type(debug) is list and ('pdb' in debug or 'models' in debug or 'chains' in debug or 'residues' in debug or 'atoms' in debug or 'bridges' in debug): 
-            print color.BOLD + color.UNDERLINE + "PDB INFORMATION" + color.END
-            print color.BOLD + "Header:\t\t" + color.END + self.header
-            print color.BOLD + "Date:\t\t" + color.END + self.date
-            print color.BOLD + "Code:\t\t" + color.END + self.code
-            if not self.obsolete: print color.BOLD + "Obsolete:\t" + color.END + color.GREEN + "No" + color.END
-            if self.obsolete: print color.BOLD + "Obsolete:\t" + color.END + color.RED + str(self.obsolete) + color.END
-            print color.BOLD + "Title:\t\t" + color.END + self.title
-            if not self.split: print color.BOLD + "Split:\t\t" + color.END + color.GREEN + "No" + color.END
-            if self.split: print color.BOLD + "Split:\t\t" + color.END + color.RED + str(self.split) + color.END
-            if not self.caveat: print color.BOLD + "Caveat:\t\t" + color.END + color.GREEN + "No" + color.END
-            if self.caveat: print color.BOLD + "Caveat:\t\t" + color.END + color.RED + str(self.split) + color.END
-            print color.BOLD + "Compounds:\t" + color.END + str(len(self.compounds))
+            print(color.BOLD + color.UNDERLINE + "PDB INFORMATION" + color.END)
+            print(color.BOLD + "Header:\t\t" + color.END + self.header)
+            print(color.BOLD + "Date:\t\t" + color.END + self.date)
+            print(color.BOLD + "Code:\t\t" + color.END + self.code)
+            if not self.obsolete: print(color.BOLD + "Obsolete:\t" + color.END + color.GREEN + "No" + color.END)
+            if self.obsolete: print(color.BOLD + "Obsolete:\t" + color.END + color.RED + str(self.obsolete) + color.END)
+            print(color.BOLD + "Title:\t\t" + color.END + self.title)
+            if not self.split: print(color.BOLD + "Split:\t\t" + color.END + color.GREEN + "No" + color.END)
+            if self.split: print(color.BOLD + "Split:\t\t" + color.END + color.RED + str(self.split) + color.END)
+            if not self.caveat: print(color.BOLD + "Caveat:\t\t" + color.END + color.GREEN + "No" + color.END)
+            if self.caveat: print(color.BOLD + "Caveat:\t\t" + color.END + color.RED + str(self.split) + color.END)
+            print(color.BOLD + "Compounds:\t" + color.END + str(len(self.compounds)))
             if type(debug) is list and 'compounds' in debug:
                 for k in range(len(self.compound_list)):
                     self.compounds[self.compound_list[k]].print_compound_info()
-            print color.BOLD + "Keywords:\t" + color.END + self.keywords
-            print color.BOLD + "Exp. method:\t" + color.END + str(self.expmethod)
-            print color.BOLD + "Models:\t\t" + color.END + str(self.model_number)
+            print(color.BOLD + "Keywords:\t" + color.END + self.keywords)
+            print(color.BOLD + "Exp. method:\t" + color.END + str(self.expmethod))
+            print(color.BOLD + "Models:\t\t" + color.END + str(self.model_number))
             if type(debug) is list and ('models' in debug or 'chains' in debug or 'residues' in debug or 'atoms' in debug):
                 for k in range(len(self.model_list)):
                     self.models[self.model_list[k]].print_model_info(debug)
             if type(debug) is list and ('chains' in debug or 'residues' in debug or 'atoms' in debug):
-                print color.CYAN + color.BOLD + "\n\t\tGeneral chains:" + color.END
+                print(color.CYAN + color.BOLD + "\n\t\tGeneral chains:" + color.END)
                 for k in range(len(self.general_chain_list)):
                     self.general_chains[self.general_chain_list[k]].print_general_chain_info(debug)
-            print color.BOLD + "Bridges:\t" + color.END + str(len(self.bridge_list))
-            print color.BOLD + "Cross-chain br:\t" + color.END + str(self.cross_bridges_number)
+            print(color.BOLD + "Bridges:\t" + color.END + str(len(self.bridge_list)))
+            print(color.BOLD + "Cross-chain br:\t" + color.END + str(self.cross_bridges_number))
             if type(debug) is list and 'bridges' in debug:
                 for k in range(len(self.bridge_list)):
                     self.bridges[self.bridge_list[k]].print_bridge_info()
@@ -1571,14 +1571,14 @@ class Model:
                         output_file.write(self.chains[chain].print_xyz(args['fourcolumn'],args['columns'],args['hetatoms']))
 #                        output_file.write('\n\n')
     def print_model_info(self,debug):
-        print color.BOLD + "\tModel:\t\t" + color.END + str(self.number)
-        print color.BOLD + "\tTime:\t\t" + color.END + str(self.time)
-        print color.BOLD + "\tChains:\t\t" + color.END + str(len(self.chain_list))
-        print color.BOLD + "\tChain names:\t" + color.END + str(self.chain_list)
+        print(color.BOLD + "\tModel:\t\t" + color.END + str(self.number))
+        print(color.BOLD + "\tTime:\t\t" + color.END + str(self.time))
+        print(color.BOLD + "\tChains:\t\t" + color.END + str(len(self.chain_list)))
+        print(color.BOLD + "\tChain names:\t" + color.END + str(self.chain_list))
         if type(debug) is list and ('chains' in debug or 'residues' in debug or 'atoms' in debug):
             for k in range(len(self.chain_list)):
                 self.chains[self.chain_list[k]].print_chain_info(debug)
-        print "\t__________________________________"
+        print("\t__________________________________")
 
 #### Chain
 class Chain:
@@ -1629,7 +1629,7 @@ class Chain:
         self.find_total_atom_number()
         self.find_com()
         self.find_R()
-        if self.warning: print self.warning  #### todo to poprawic
+        if self.warning: print(self.warning)  #### todo to poprawic
     def find_com(self):
         com = self.com
         for res in self.residue_list_sorted:
@@ -1824,27 +1824,27 @@ class Chain:
         result = result
         return result
     def print_chain_info(self,debug):
-        print color.BOLD + "\t\tChain name:\t" + color.END + str(self.name)
-        print color.BOLD + "\t\tNEnd:\t\t" + color.END + self.residues[self.residue_list[self.NEnd]].type + '_' + str(self.residues[self.residue_list[self.NEnd]].name)
-        print color.BOLD + "\t\tCEnd:\t\t" + color.END + self.residues[self.residue_list[self.CEnd]].type + '_' + str(self.residues[self.residue_list[self.CEnd]].name)
-        print color.BOLD + "\t\tResidues num:\t" + color.END + str(len(self.residue_list))
-        print color.BOLD + "\t\tPeptide res:\t" + color.END + str(len(self.residue_list_sorted))
+        print(color.BOLD + "\t\tChain name:\t" + color.END + str(self.name))
+        print(color.BOLD + "\t\tNEnd:\t\t" + color.END + self.residues[self.residue_list[self.NEnd]].type + '_' + str(self.residues[self.residue_list[self.NEnd]].name))
+        print(color.BOLD + "\t\tCEnd:\t\t" + color.END + self.residues[self.residue_list[self.CEnd]].type + '_' + str(self.residues[self.residue_list[self.CEnd]].name))
+        print(color.BOLD + "\t\tResidues num:\t" + color.END + str(len(self.residue_list)))
+        print(color.BOLD + "\t\tPeptide res:\t" + color.END + str(len(self.residue_list_sorted)))
         if type(debug) is list and ('residues' in debug or 'atoms' in debug):
             for k in range(len(self.residue_list_sorted)):
                 self.residues[self.residue_list_sorted[k]].print_residue_info(debug)
-        print color.BOLD + "\t\tNonPeptide res:\t" + color.END + str(len(self.residue_nonpeptide_list))
+        print(color.BOLD + "\t\tNonPeptide res:\t" + color.END + str(len(self.residue_nonpeptide_list)))
         if type(debug) is list and ('residues' in debug or 'atoms' in debug):
             for k in range(len(self.residue_nonpeptide_list)):
                 self.residues[self.residue_nonpeptide_list[k]].print_residue_info(debug)
-        print color.BOLD + "\t\tMissing res:\t" + color.END + str(len(self.residue_missing_list))
+        print(color.BOLD + "\t\tMissing res:\t" + color.END + str(len(self.residue_missing_list)))
         if type(debug) is list and ('residues' in debug or 'atoms' in debug):
             for k in range(len(self.residue_missing_list)):
                 self.residues[self.residue_missing_list[k]].print_residue_info(debug)
-        print color.BOLD + "\t\tHetAtom res:\t" + color.END + str(len(self.residue_hetatom_list))
+        print(color.BOLD + "\t\tHetAtom res:\t" + color.END + str(len(self.residue_hetatom_list)))
         if type(debug) is list and ('residues' in debug or 'atoms' in debug):
             for k in range(len(self.residue_hetatom_list)):
                 self.residues[self.residue_hetatom_list[k]].print_residue_info(debug)
-        print color.BOLD + "\t\tResidues:" + color.END
+        print(color.BOLD + "\t\tResidues:" + color.END)
         result = '\t\t['
         for k in range(len(self.residue_list_sorted)):
             if self.residues[self.residue_list[k]].missing: result += color.RED + str(self.residues[self.residue_list[k]].name) + color.END + ', '
@@ -1853,9 +1853,9 @@ class Chain:
             else: result += str(self.residues[self.residue_list[k]].name) + ', '
         result = result[:-2]
         result += ']'
-        print result
-        print color.BOLD + "\t\tColor code:\t" + color.END + "Peptide\t\t" + color.RED + "Missing\t\t" + color.END + color.YELLOW + "Nonpeptide\t\t" + color.END + color.PURPLE + "Peptide hetatom" + color.END
-        print "\t\t________________________________\n"
+        print(result)
+        print(color.BOLD + "\t\tColor code:\t" + color.END + "Peptide\t\t" + color.RED + "Missing\t\t" + color.END + color.YELLOW + "Nonpeptide\t\t" + color.END + color.PURPLE + "Peptide hetatom" + color.END)
+        print("\t\t________________________________\n")
 
 #### General chain
 class General_chain:
@@ -1909,19 +1909,19 @@ class General_chain:
     #### Cleaning part
     #### Printing part
     def print_general_chain_info(self,debug):
-        print color.BOLD + "\t\tChain name:\t" + color.END + str(self.name)
-        print color.BOLD + "\t\tResidues num:\t" + color.END + str(len(self.residue_list))
-        print color.BOLD + "\t\tResidues:\t" + color.END + str(len(self.residue_list))
-        if type(debug) is list and ('residues' in debug or 'atoms' in debug): print "\t\t\t" + str(self.residue_list)
-        print color.BOLD + "\t\tMissing res:\t" + color.END + str(len(self.residue_list_missing))
-        if type(debug) is list and ('residues' in debug or 'atoms' in debug): print "\t\t\t" + str(self.residue_list_missing)
-        print color.BOLD + "\t\tZero occ res:\t" + color.END + str(len(self.zero_occupancy_residues))
-        if type(debug) is list and ('residues' in debug or 'atoms' in debug): print "\t\t\t" + str(self.zero_occupancy_residues)
-        print color.BOLD + "\t\tMissing atoms:\t" + color.END + str(len(self.atom_list_missing))
-        if type(debug) is list and ('atoms' in debug): print "\t\t\t" + str(self.atom_list_missing)
-        print color.BOLD + "\t\tZero occ atoms:\t" + color.END + str(len(self.zero_occupancy_atoms))
-        if type(debug) is list and ('atoms' in debug): print "\t\t\t" + str(self.zero_occupancy_atoms)
-        print "\t\t________________________________\n"
+        print(color.BOLD + "\t\tChain name:\t" + color.END + str(self.name))
+        print(color.BOLD + "\t\tResidues num:\t" + color.END + str(len(self.residue_list)))
+        print(color.BOLD + "\t\tResidues:\t" + color.END + str(len(self.residue_list)))
+        if type(debug) is list and ('residues' in debug or 'atoms' in debug): print("\t\t\t" + str(self.residue_list))
+        print(color.BOLD + "\t\tMissing res:\t" + color.END + str(len(self.residue_list_missing)))
+        if type(debug) is list and ('residues' in debug or 'atoms' in debug): print("\t\t\t" + str(self.residue_list_missing))
+        print(color.BOLD + "\t\tZero occ res:\t" + color.END + str(len(self.zero_occupancy_residues)))
+        if type(debug) is list and ('residues' in debug or 'atoms' in debug): print("\t\t\t" + str(self.zero_occupancy_residues))
+        print(color.BOLD + "\t\tMissing atoms:\t" + color.END + str(len(self.atom_list_missing)))
+        if type(debug) is list and ('atoms' in debug): print("\t\t\t" + str(self.atom_list_missing))
+        print(color.BOLD + "\t\tZero occ atoms:\t" + color.END + str(len(self.zero_occupancy_atoms)))
+        if type(debug) is list and ('atoms' in debug): print("\t\t\t" + str(self.zero_occupancy_atoms))
+        print("\t\t________________________________\n")
 
 
 #### Residue
@@ -2003,21 +2003,21 @@ class Residue:
     def print_point_coordinates(self):
         return self.atoms[self.atom_list[self.main]].coordinates
     def print_residue_info(self,debug):
-        print color.BOLD + "\t\t\tResidue name:\t" + color.END + str(self.name)
-        print color.BOLD + "\t\t\tResidues type:\t" + color.END + self.type
-        if self.standard: print color.BOLD + "\t\t\tStandard:\t" + color.END + color.GREEN + str(self.standard) + color.END
-        if not self.standard: print color.BOLD + "\t\t\tStandard:\t" + color.END + color.RED + str(self.standard) + color.END
-        print color.BOLD + "\t\t\tNum of atoms:\t" + color.END + str(len(self.atom_list))
-        if not self.missing: print color.BOLD + "\t\t\tMissing:\t" + color.END + color.GREEN + str(self.missing) + color.END
-        if self.missing: print color.BOLD + "\t\t\tMissing:\t" + color.END + color.RED + str(self.missing) + color.END
-        if not self.hetatom: print color.BOLD + "\t\t\tHeteroatom:\t" + color.END + color.GREEN + str(self.hetatom) + color.END
-        if self.hetatom: print color.BOLD + "\t\t\tHeteroatom:\t" + color.END + color.RED + str(self.hetatom) + color.END
-        if not self.peptide: print color.BOLD + "\t\t\tPeptide:\t" + color.END + color.RED + str(self.peptide) + color.END
-        if self.peptide: print color.BOLD + "\t\t\tPeptide:\t" + color.END + color.GREEN + str(self.peptide) + color.END
+        print(color.BOLD + "\t\t\tResidue name:\t" + color.END + str(self.name))
+        print(color.BOLD + "\t\t\tResidues type:\t" + color.END + self.type)
+        if self.standard: print(color.BOLD + "\t\t\tStandard:\t" + color.END + color.GREEN + str(self.standard) + color.END)
+        if not self.standard: print(color.BOLD + "\t\t\tStandard:\t" + color.END + color.RED + str(self.standard) + color.END)
+        print(color.BOLD + "\t\t\tNum of atoms:\t" + color.END + str(len(self.atom_list)))
+        if not self.missing: print(color.BOLD + "\t\t\tMissing:\t" + color.END + color.GREEN + str(self.missing) + color.END)
+        if self.missing: print(color.BOLD + "\t\t\tMissing:\t" + color.END + color.RED + str(self.missing) + color.END)
+        if not self.hetatom: print(color.BOLD + "\t\t\tHeteroatom:\t" + color.END + color.GREEN + str(self.hetatom) + color.END)
+        if self.hetatom: print(color.BOLD + "\t\t\tHeteroatom:\t" + color.END + color.RED + str(self.hetatom) + color.END)
+        if not self.peptide: print(color.BOLD + "\t\t\tPeptide:\t" + color.END + color.RED + str(self.peptide) + color.END)
+        if self.peptide: print(color.BOLD + "\t\t\tPeptide:\t" + color.END + color.GREEN + str(self.peptide) + color.END)
         if type(debug) is list and 'atoms' in debug:
             for k in range(len(self.atom_list)):
                 self.atoms[self.atom_list[k]].print_atom_info(debug)
-        print "\t\t\t________________________________\n"
+        print("\t\t\t________________________________\n")
 
 
 #### Atom
@@ -2075,18 +2075,18 @@ class Atom:
         if four: return str(res_index) + " " + str(self.coordinates[0]) + " " + str(self.coordinates[1]) + " " + str(self.coordinates[2]) + "\n"
         else: return str(res_index) + " " + str(self.coordinates[0]) + " " + str(self.coordinates[1]) + " " + str(self.coordinates[2]) + " " + self.resname + "\n"
     def print_atom_info(self,debug):
-        print color.BOLD + "\t\t\t\tName:\t\t" + color.END + self.name.strip()
-        print color.BOLD + "\t\t\t\tSerial:\t\t" + color.END + str(self.serial)
-        print color.BOLD + "\t\t\t\tAlt Location:\t" + color.END + self.altloc
-        print color.BOLD + "\t\t\t\tInsertion:\t" + color.END + self.insertion
-        print color.BOLD + "\t\t\t\tCoordinates:\t" + color.END + str(self.coordinates)
-        print color.BOLD + "\t\t\t\tOccupancy:\t" + color.END + str(self.occupancy)
-        print color.BOLD + "\t\t\t\tBeta Factor:\t" + color.END + str(self.bFactor)
-        print color.BOLD + "\t\t\t\tElement:\t" + color.END + self.element
-        print color.BOLD + "\t\t\t\tCharge:\t" + color.END + self.charge
-        if self.main : print color.BOLD + "\t\t\t\tMain:\t\t" + color.END + color.GREEN + str(self.main) + color.END
-        if not self.main : print color.BOLD + "\t\t\t\tMain:\t\t" + color.END + color.RED + str(self.main) + color.END
-        print "\t\t\t\t________________________________\n"
+        print(color.BOLD + "\t\t\t\tName:\t\t" + color.END + self.name.strip())
+        print(color.BOLD + "\t\t\t\tSerial:\t\t" + color.END + str(self.serial))
+        print(color.BOLD + "\t\t\t\tAlt Location:\t" + color.END + self.altloc)
+        print(color.BOLD + "\t\t\t\tInsertion:\t" + color.END + self.insertion)
+        print(color.BOLD + "\t\t\t\tCoordinates:\t" + color.END + str(self.coordinates))
+        print(color.BOLD + "\t\t\t\tOccupancy:\t" + color.END + str(self.occupancy))
+        print(color.BOLD + "\t\t\t\tBeta Factor:\t" + color.END + str(self.bFactor))
+        print(color.BOLD + "\t\t\t\tElement:\t" + color.END + self.element)
+        print(color.BOLD + "\t\t\t\tCharge:\t" + color.END + self.charge)
+        if self.main : print(color.BOLD + "\t\t\t\tMain:\t\t" + color.END + color.GREEN + str(self.main) + color.END)
+        if not self.main : print(color.BOLD + "\t\t\t\tMain:\t\t" + color.END + color.RED + str(self.main) + color.END)
+        print("\t\t\t\t________________________________\n")
 
 
 #### Compound
@@ -2134,20 +2134,20 @@ class Compound:
     #### Cleaning part
     #### Printing part
     def print_compound_info(self):
-        print color.BOLD + "\tName:\t\t" + color.END + self.name
-        print color.BOLD + "\tMolecule:\t" + color.END + self.molecule
-        print color.BOLD + "\tChains:\t\t" + color.END + str(self.chains)
-        print color.BOLD + "\tFragment:\t" + color.END + self.fragment
-        print color.BOLD + "\tSynonym:\t" + color.END + self.synonym
-        print color.BOLD + "\tEC:\t\t" + color.END + self.EC
-        print color.BOLD + "\tEngineered:\t" + color.END + str(self.engineered)
-        print color.BOLD + "\tMutation:\t" + color.END + str(self.mutation)
-        print color.BOLD + "\tSynthetic:\t" + color.END + str(self.synthetic)
-        print color.BOLD + "\tOrganism Sci:\t" + color.END + self.org_sc
-        print color.BOLD + "\tOrganism Com:\t" + color.END + self.org_com
-        print color.BOLD + "\tTAXID:\t\t" + color.END + self.taxid
-        print color.BOLD + "\tDetails:\t" + color.END + self.details
-        print "\t__________________________________"
+        print(color.BOLD + "\tName:\t\t" + color.END + self.name)
+        print(color.BOLD + "\tMolecule:\t" + color.END + self.molecule)
+        print(color.BOLD + "\tChains:\t\t" + color.END + str(self.chains))
+        print(color.BOLD + "\tFragment:\t" + color.END + self.fragment)
+        print(color.BOLD + "\tSynonym:\t" + color.END + self.synonym)
+        print(color.BOLD + "\tEC:\t\t" + color.END + self.EC)
+        print(color.BOLD + "\tEngineered:\t" + color.END + str(self.engineered))
+        print(color.BOLD + "\tMutation:\t" + color.END + str(self.mutation))
+        print(color.BOLD + "\tSynthetic:\t" + color.END + str(self.synthetic))
+        print(color.BOLD + "\tOrganism Sci:\t" + color.END + self.org_sc)
+        print(color.BOLD + "\tOrganism Com:\t" + color.END + self.org_com)
+        print(color.BOLD + "\tTAXID:\t\t" + color.END + self.taxid)
+        print(color.BOLD + "\tDetails:\t" + color.END + self.details)
+        print("\t__________________________________")
 
 #### Bridge
 class Bridge:
@@ -2270,27 +2270,27 @@ class Bridge:
 
     #### Printing
     def print_bridge_info(self):
-        print color.BOLD + "\tRes1 index:\t" + color.END + str(self.res1_index) + color.BOLD + "\tRes2 index:\t" + color.END + str(self.res2_index)
-        print color.BOLD + "\tRes1 type:\t" + color.END + self.res1_type + color.BOLD + "\tRes2 type:\t" + color.END + self.res2_type
-        print color.BOLD + "\tRes1 chain:\t" + color.END + self.res1_chain + color.BOLD + "\tRes2 chain:\t" + color.END + self.res2_chain
-        print color.BOLD + "\tRes1 ins:\t" + color.END + self.res1_insert + color.BOLD + "\tRes2 ins:\t" + color.END + self.res2_insert
-        print color.BOLD + "\tRes1 symmetry:\t" + color.END + self.res1_symop + color.BOLD + "\tRes2 symmetry:\t" + color.END + self.res2_symop
-        print color.BOLD + "\tRes1 atom:\t" + color.END + self.res1_atom.strip() + color.BOLD + "\tRes2 atom:\t" + color.END + self.res2_atom.strip()
-        print color.BOLD + "\tRes1 NEnd:\t" + color.END + str(self.res1_NEnd) + color.BOLD + "\tRes2 NEnd:\t" + color.END + str(self.res2_NEnd)
-        print color.BOLD + "\tRes1 CEnd:\t" + color.END + str(self.res1_CEnd) + color.BOLD + "\tRes2 CEnd:\t" + color.END + str(self.res2_CEnd)
-        if self.dist > 4.2 or self.dist < 2.0: print color.BOLD + "\tDistance:\t" + color.END + color.RED + str(self.dist) + color.END
-        if self.dist <= 4.2 and self.dist >= 2.0: print color.BOLD + "\tDistance:\t" + color.END + color.GREEN + str(self.dist) + color.END
-        if self.type == 'SS': print color.BOLD + "\tType:\t\t" + color.END + color.YELLOW + self.type + color.END
-        elif self.type == 'AMIDE' or self.type == 'AMIDE-like': print color.BOLD + "\tType:\t\t" + color.END + color.RED + self.type + color.END
-        elif self.type == 'ESTER' or self.type == 'ESTER-like': print color.BOLD + "\tType:\t\t" + color.END + color.GREEN + self.type + color.END
-        elif self.type == 'THIOESTER' or self.type == 'THIOESTER-like': print color.BOLD + "\tType:\t\t" + color.END + color.BLUE + self.type + color.END
-        else: print color.BOLD + "\tType:\t\t" + color.END + self.type
-        print color.BOLD + "\tLoop size:\t" + color.END + str(self.size)
-        if self.peptide: print color.BOLD + "\tPeptide:\t" + color.END + color.GREEN + str(self.peptide) + color.END
-        else: print color.BOLD + "\tPeptide atoms:\t" + color.END + color.RED + str(self.peptide) + color.END
-        if self.exists: print color.BOLD + "\tExists:\t\t" + color.END + color.GREEN + str(self.exists) + color.END
-        else: print color.BOLD + "\tAtoms Exist:\t\t" + color.END + color.RED + str(self.exists) + color.END
-        print "\t__________________________________"
+        print(color.BOLD + "\tRes1 index:\t" + color.END + str(self.res1_index) + color.BOLD + "\tRes2 index:\t" + color.END + str(self.res2_index))
+        print(color.BOLD + "\tRes1 type:\t" + color.END + self.res1_type + color.BOLD + "\tRes2 type:\t" + color.END + self.res2_type)
+        print(color.BOLD + "\tRes1 chain:\t" + color.END + self.res1_chain + color.BOLD + "\tRes2 chain:\t" + color.END + self.res2_chain)
+        print(color.BOLD + "\tRes1 ins:\t" + color.END + self.res1_insert + color.BOLD + "\tRes2 ins:\t" + color.END + self.res2_insert)
+        print(color.BOLD + "\tRes1 symmetry:\t" + color.END + self.res1_symop + color.BOLD + "\tRes2 symmetry:\t" + color.END + self.res2_symop)
+        print(color.BOLD + "\tRes1 atom:\t" + color.END + self.res1_atom.strip() + color.BOLD + "\tRes2 atom:\t" + color.END + self.res2_atom.strip())
+        print(color.BOLD + "\tRes1 NEnd:\t" + color.END + str(self.res1_NEnd) + color.BOLD + "\tRes2 NEnd:\t" + color.END + str(self.res2_NEnd))
+        print(color.BOLD + "\tRes1 CEnd:\t" + color.END + str(self.res1_CEnd) + color.BOLD + "\tRes2 CEnd:\t" + color.END + str(self.res2_CEnd))
+        if self.dist > 4.2 or self.dist < 2.0: print(color.BOLD + "\tDistance:\t" + color.END + color.RED + str(self.dist) + color.END)
+        if self.dist <= 4.2 and self.dist >= 2.0: print(color.BOLD + "\tDistance:\t" + color.END + color.GREEN + str(self.dist) + color.END)
+        if self.type == 'SS': print(color.BOLD + "\tType:\t\t" + color.END + color.YELLOW + self.type + color.END)
+        elif self.type == 'AMIDE' or self.type == 'AMIDE-like': print(color.BOLD + "\tType:\t\t" + color.END + color.RED + self.type + color.END)
+        elif self.type == 'ESTER' or self.type == 'ESTER-like': print(color.BOLD + "\tType:\t\t" + color.END + color.GREEN + self.type + color.END)
+        elif self.type == 'THIOESTER' or self.type == 'THIOESTER-like': print(color.BOLD + "\tType:\t\t" + color.END + color.BLUE + self.type + color.END)
+        else: print(color.BOLD + "\tType:\t\t" + color.END + self.type)
+        print(color.BOLD + "\tLoop size:\t" + color.END + str(self.size))
+        if self.peptide: print(color.BOLD + "\tPeptide:\t" + color.END + color.GREEN + str(self.peptide) + color.END)
+        else: print(color.BOLD + "\tPeptide atoms:\t" + color.END + color.RED + str(self.peptide) + color.END)
+        if self.exists: print(color.BOLD + "\tExists:\t\t" + color.END + color.GREEN + str(self.exists) + color.END)
+        else: print(color.BOLD + "\tAtoms Exist:\t\t" + color.END + color.RED + str(self.exists) + color.END)
+        print("\t__________________________________")
 
 
 ################ MAIN PART ################

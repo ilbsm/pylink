@@ -22,7 +22,7 @@ def compareEq(a, b):
         return abs(a - b) < EPS
     else:
         assert len(a) == len(b)
-        for i in xrange(len(a)):
+        for i in range(len(a)):
             if not compareEq(a[i], b[i]): return False
         return True
 
@@ -59,7 +59,7 @@ def fileCheck(fn):
         open(fn, "r")
         return 1
     except IOError:
-        print("Error: File", fn, "does not appear to exist.\n")
+        print(("Error: File", fn, "does not appear to exist.\n"))
         return 0
 
 
@@ -76,8 +76,8 @@ def chainRead(filename, begin=False, end=False):
         if len(line) > 1:
             k2, x2, y2, z2 = [float(x) for x in line.split()[:4]]
             if compareEq([k, x, y, z], [k2, x2, y2, z2]):
-                print("Error: There were two identical atoms with the index", k,
-                      "in the file. Program is done becouse of that.\n")
+                print(("Error: There were two identical atoms with the index", k,
+                      "in the file. Program is done becouse of that.\n"))
                 return []
             k, x, y, z = k2, x2, y2, z2
             if (k >= b and k <= e) or (not begin and not end):
@@ -88,8 +88,8 @@ def chainRead(filename, begin=False, end=False):
 
 def CompsOverlie(comp1, comp2):
     # Return True if there are points on two comps that overlie
-    for i in xrange(len(comp1)):
-        for j in xrange(len(comp2)):
+    for i in range(len(comp1)):
+        for j in range(len(comp2)):
             if compareEq(comp1[i][1], comp2[j][1]): return True
     return False
 
@@ -108,7 +108,7 @@ def linking_oneSegment(A1, A2, B1, B2):
     n3 = normalizedVectorProduct(c, d)
     n4 = normalizedVectorProduct(d, a)
     if n1 == 0 or n2 == 0 or n3 == 0 or n4 == 0:
-        print "Problem with Vector Product...", A1, A2, B1, B2, a, b, c, d
+        print("Problem with Vector Product...", A1, A2, B1, B2, a, b, c, d)
         return 0
 
     f = [B2[i] - B1[i] for i in [0, 1, 2]]
@@ -138,28 +138,28 @@ def linking_components(comp1, comp2):
     N1, N2 = len(comp1), len(comp2)
     links = []  # links[i][j] = GLN ( comp1<i,i+1>, comp2<j,j+1> ) - GLN between each pair of segments: ONE SEGMENT with ONE SEGMENT
     #    links = (N1-1)*[(N2-1)*[0]]
-    for i in xrange(N1 - 1): links.append((N2 - 1) * [0])
+    for i in range(N1 - 1): links.append((N2 - 1) * [0])
 
-    for i in xrange(N1 - 1):
-        for j in xrange(N2 - 1):
+    for i in range(N1 - 1):
+        for j in range(N2 - 1):
             links[i][j] = linking_oneSegment(comp1[i][1], comp1[i + 1][1], comp2[j][1], comp2[j + 1][1])
 
     vlinksLOOP1, vlinksLOOP2 = (N2 - 1) * [0], (N1 - 1) * [
         0]  # vlinksLOOP1[j] = GLN ( comp1, comp2<j,j+1> ) - GLN between WHOLE comp1 (as a LOOP1) and ONE SEGMENT of comp2
-    for i in xrange(N1 - 1):
-        for j in xrange(N2 - 1):
+    for i in range(N1 - 1):
+        for j in range(N2 - 1):
             vlinksLOOP1[j] += links[i][j]
             vlinksLOOP2[i] += links[i][j]
 
     linksLOOP1, linksLOOP2 = [], []  # linksLOOP1[i][j] = GLN ( comp1, comp2<i-j> ) - GLN between WHOLE comp1 (as a LOOP1) and PART of comp2 <i-j>
-    for j in xrange(N2): linksLOOP1.append(N2 * [0])
-    for i in xrange(N1): linksLOOP2.append(N1 * [0])
+    for j in range(N2): linksLOOP1.append(N2 * [0])
+    for i in range(N1): linksLOOP2.append(N1 * [0])
 
-    for j1 in xrange(N2):
-        for j2 in xrange(j1 + 1, N2):
+    for j1 in range(N2):
+        for j2 in range(j1 + 1, N2):
             linksLOOP1[j1][j2] = linksLOOP1[j1][j2 - 1] + vlinksLOOP1[j2 - 1]
-    for i1 in xrange(N1):
-        for i2 in xrange(i1 + 1, N1):
+    for i1 in range(N1):
+        for i2 in range(i1 + 1, N1):
             linksLOOP2[i1][i2] = linksLOOP2[i1][i2 - 1] + vlinksLOOP2[i2 - 1]
 
     return linksLOOP1, linksLOOP2
@@ -176,7 +176,9 @@ def colorFromGLN(gln):
         return (0, 0, int(255 * 1 / (gln * gln)))
 
 
-def writePng(linksLOOP, filename, (mmax, xmax, ymax), (mmin, xmin, ymin)):
+def writePng(linksLOOP, filename, xxx_todo_changeme, xxx_todo_changeme1):
+    (mmax, xmax, ymax) = xxx_todo_changeme
+    (mmin, xmin, ymin) = xxx_todo_changeme1
     CHAIN = len(linksLOOP)
     KLATKA = int(WIDTH / CHAIN)
     FLOATKLATKA = float(WIDTH) / CHAIN
@@ -184,8 +186,8 @@ def writePng(linksLOOP, filename, (mmax, xmax, ymax), (mmin, xmin, ymin)):
     image = Image.new('RGB', (WIDTH, HEIGHT), 'white')
     draw = ImageDraw.Draw(image)
 
-    for i in xrange(CHAIN):
-        for j in xrange(i + 1, CHAIN):
+    for i in range(CHAIN):
+        for j in range(i + 1, CHAIN):
             color = colorFromGLN(linksLOOP[i][j])
             for x in range(0, KLATKA + 1):
                 for y in range(0, KLATKA + 1):
@@ -229,9 +231,9 @@ def writePng(linksLOOP, filename, (mmax, xmax, ymax), (mmin, xmin, ymin)):
 def main():
     # Reading arguments
     if (len(sys.argv) == 1):
-        print("*\nUsage of the program: python " + sys.argv[0] + " <filename1> (<begin of a comp1> <end of a comp1>) "
+        print(("*\nUsage of the program: python " + sys.argv[0] + " <filename1> (<begin of a comp1> <end of a comp1>) "
                                                                  "<filename2> (<begin of a comp2> <end of a comp2>) "
-                                                                 "(<-additional_option and argument>^n)")
+                                                                 "(<-additional_option and argument>^n)"))
         print("*\nAdditional options:\n   -> -file (0,1): if we create png file/s; implicitly file=1;\n   "
               "-> -out (0,1,2): output on the screen, 0:none, 1:short, 2:long<compatybile with Wanda's GLN paper>; "
               "implicitly out=1;\n   -> -close (00,10,01,11): if we close 1st/2nd comp; implicitly close=00;\n   "
@@ -320,15 +322,15 @@ def main():
     max10, ymax10, min10, ymin10, max20, ymax20, min20, ymin20 = 0, 0, 0, 0, 0, 0, 0, 0
 
     if loop == 0 or loop == 2:
-        for i1 in xrange(N1):
-            for i2 in xrange(i1 + 1, N1):
+        for i1 in range(N1):
+            for i2 in range(i1 + 1, N1):
                 if linksLOOP2[i1][i2] > max2: max2, xmax2, ymax2 = linksLOOP2[i1][i2], i1, i2
                 if linksLOOP2[i1][i2] < min2: min2, xmin2, ymin2 = linksLOOP2[i1][i2], i1, i2
         if linksLOOP2[0][i1] > max20: max20, ymax20 = linksLOOP2[0][i1], i1
         if linksLOOP2[0][i1] < min20: min20, ymin20 = linksLOOP2[0][i1], i1
     if loop == 0 or loop == 1:
-        for j1 in xrange(N2):
-            for j2 in xrange(j1 + 1, N2):
+        for j1 in range(N2):
+            for j2 in range(j1 + 1, N2):
                 if linksLOOP1[j1][j2] > max1: max1, xmax1, ymax1 = linksLOOP1[j1][j2], j1, j2
                 if linksLOOP1[j1][j2] < min1: min1, xmin1, ymin1 = linksLOOP1[j1][j2], j1, j2
         if linksLOOP1[0][j1] > max10: max10, ymax10 = linksLOOP1[0][j1], j1
@@ -363,18 +365,18 @@ def main():
 
     if out == 1:
         if loop == 0 or loop == 1:
-            print( "*LOOP1 wh: " + str(whole1) + " max: " + str(max1) + " min: " + str(min1) + " cl: " + cl1)
+            print(( "*LOOP1 wh: " + str(whole1) + " max: " + str(max1) + " min: " + str(min1) + " cl: " + cl1))
         if loop == 0 or loop == 2:
-            print( "*LOOP2 wh: " + str(whole2) + " max: " + str(max2) + " min: " + str(min2) + " cl: " + cl2)
+            print(( "*LOOP2 wh: " + str(whole2) + " max: " + str(max2) + " min: " + str(min2) + " cl: " + cl2))
     if out == 2:
         if loop == 0 or loop == 1:
-            print(" " + str(N2) + " wh1: " + str(whole1) + " wh1+: 0 max1: " + str(max1) + " min1: " + str(min1) +
+            print((" " + str(N2) + " wh1: " + str(whole1) + " wh1+: 0 max1: " + str(max1) + " min1: " + str(min1) +
                   " max10: " + str(max10) + " " + str(ymax10) + " min10: " + str(min10) + " " + str(ymin10) +
-                  " cl1: " + cl1)
+                  " cl1: " + cl1))
         if loop == 0 or loop == 2:
-            print(" " + str(N1) + " wh2: " + str(whole2) + " wh2+: 0 max2: " + str(max2) + " min2: " + str(min2) +
+            print((" " + str(N1) + " wh2: " + str(whole2) + " wh2+: 0 max2: " + str(max2) + " min2: " + str(min2) +
                   " max20: " + str(max20) + " " + str(ymax20) + " min20: " + str(min20) + " " + str(ymin20) +
-                  " cl2: " + cl2)
+                  " cl2: " + cl2))
 
     i1, i2 = filename1.rfind("/"), filename1.rfind(".")
     n1 = filename1[i1 + 1:] if i2 == -1 else filename1[
