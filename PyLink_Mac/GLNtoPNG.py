@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 import sys
 import math
 from PIL import Image, ImageDraw, ImageFont
@@ -11,8 +11,8 @@ R = 2  # precision for rounding an output
 
 WIDTH = 495
 HEIGHT = 495
-FONT_SIZE = WIDTH / 27
-FONT_SIZE_SMALL = WIDTH / 35
+FONT_SIZE = int(WIDTH / 27)
+FONT_SIZE_SMALL = int(WIDTH / 35)
 FONT_TYPE = "/Library/Fonts/Arial.ttf"
 FONT_TYPE_SMALL = "/Library/Fonts/Arial.ttf"
 

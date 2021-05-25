@@ -11,8 +11,8 @@ R = 2  # precision for rounding an output
 
 WIDTH = 340
 HEIGHT = 340
-FONT_SIZE = WIDTH / 27
-FONT_SIZE_SMALL = WIDTH / 35
+FONT_SIZE = int(WIDTH / 27)
+FONT_SIZE_SMALL = int(WIDTH / 35)
 FONT_TYPE = "arial.ttf"
 FONT_TYPE_SMALL = "arial.ttf"
 

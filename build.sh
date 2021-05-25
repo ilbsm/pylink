@@ -26,6 +26,7 @@ do
    cd $DIR
    echo $py
    cp -r $py ${DIST}/
+   cp PyLink/* ${DIST}/${py}/
    rm -rf ${DIST}/${py}/.idea/
    cp README.md ${DIST}/${py}/
    cp requirements* ${DIST}/${py}/

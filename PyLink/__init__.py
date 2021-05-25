@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
-# PyLink: A PyMOL plugin to identify link, version for Windows platform
+# PyLink: A PyMOL plugin to identify link, version for all platforms
 # Script/plugin by Aleksandra Gierut (a.gierut@cent.uw.edu.pl)
+# Enhanced and adapted for Python 3 by Pawel Rubach (p.rubach@cent.uw.edu.pl)
 # Questions should be addressed to: Joanna Sulkowska (jsulkowska@cent.uw.edu.pl)
 # Any technical difficulties and remarks please report to: Aleksandra Gierut (a.gierut@cent.uw.edu.pl)
+# or Pawel Rubach (p.rubach@cent.uw.edu.pl)
 #
 # THE AUTHOR(S) DISCLAIM ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
 # INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS.  IN
@@ -13,13 +15,16 @@
 # PERFORMANCE OF THIS SOFTWARE.
 # ----------------------------------------------------------------------
 import re
+import subprocess
 import shutil
 import textwrap
 import random
-
+import multiprocessing as mp
 from itertools import combinations
 from math import floor
 import glob
+import platform
+
 from tkinter.font import Font
 import os
 
@@ -39,7 +44,7 @@ from pymol import util
 
 try:
     import matplotlib as mplt
-    mplt.use('TkAgg')
+    #mplt.use('TkAgg')
     import matplotlib.pyplot as pyplt
     import matplotlib.image as mpimg
     from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -48,35 +53,54 @@ except:
     print("  ### Matplotlib library not found. Please install it and re-run the plugin.")
 
 
+def get_main_class():
+    cls = {'Linux': PyLink, 'Darwin': PyLink, 'Windows': PyLinkWindows}
+    return cls.get(platform.system())
+
+
 def __init__(self):
     self.menuBar.addmenuitem('Plugin', 'command', 'PyLink',
                              label='PyLink',
-                             command=lambda s=self: PyLink(s))
+                             command=lambda s=self: get_main_class()(s))
+
+
+GUI_PARS = {
+    'GLN_SCREEN_HEIGHT': [800, 400, 800],
+    'GIF_PNG': ['.png', '.png', '.gif'],
+    'CHAIN_ARRAY_ROW_NAME_WIDTH': [79, 79, 84],
+    'CHAIN_ARRAY_ROW_WIDTH': [58, 58, 50],
+    'GLN_CONTENT_ROW_NAME_WIDTH': [5, 5, 11],
+    'GLN_CONTENT_ELEMENT_WIDTH': [30, 30, 10],
+    'FIX_GLX_MATRICES': [-0.24, -0.24, -0.28]
+}
+
+def gui_par(par):
+    pos = { 'Linux': 0, 'Darwin': 1, 'Windows': 2 }
+    return GUI_PARS[par][pos.get(platform.system())]
 
 
 class PyLink:
-
     def __init__(self, app):
         self.parent = app.root
         if cmd.get_version()[1] < 2.0:
             self.bold_font = Font(family="Helvetica", size=8, weight="bold")
             self.row_name_font = "bold 10"
             self.surf_btn_width = 15
-            self.gln_fig_dpi = 98
-            self.gln_fig_size = (7.8, 3.5)
-            self.chart_img_axes = [0.3, 0.4, 0.4, 0.35]
-            self.chart_size = 3.3
-            self.chart_font_size = 28
-            self.chart_subtitle = 16
+            self.gln_fig_dpi = 96
+            self.gln_fig_size = (9, 4.5)
+            self.chart_img_axes = [0.28, 0.38, 0.45, 0.4]
+            self.chart_size = 3.7
+            self.chart_font_size = 23
+            self.chart_subtitle = 18
         else:
             self.parent.option_add("*Font", "Helvetica 9")
             self.bold_font = Font(family="Helvetica", size=8, weight="bold")
             self.row_name_font = "Helvetica 9"
             self.surf_btn_width = 18
-            self.gln_fig_dpi = 98
-            self.gln_fig_size = (9, 4)
-            self.chart_img_axes = [0.3, 0.4, 0.42, 0.38]
-            self.chart_size = 3.0
+            self.gln_fig_dpi = 96
+            self.gln_fig_size = (9, 4.5)
+            self.chart_img_axes = [0.3, 0.4, 0.4, 0.35]
+            self.chart_size = 3.7
             self.chart_font_size = 18
             self.chart_subtitle = 14
 
@@ -92,11 +116,11 @@ class PyLink:
         self._marginal_atoms = {}
         self.is_macrolink = False
         self.is_ions = False
-        self.prog_converter = "python " + plugin_path + os.sep + 'converter.py '
-        self.prog_homfly = plugin_path + os.sep + "homfly.exe "
-        self.prog_poly = plugin_path + os.sep + "poly.exe  "
-        self.prog_ncuc = plugin_path + os.sep + "ncucLinks.exe "
-        self.prog_gln = "python " + plugin_path + os.sep + "GLNtoPNG.py "
+        self.prog_converter = plugin_path + os.sep + 'converter.py '
+        self.prog_homfly = plugin_path + os.sep + "homfly "
+        self.prog_poly = plugin_path + os.sep + "poly "
+        self.prog_ncuc = plugin_path + os.sep + "ncucLinks "
+        self.prog_gln = plugin_path + os.sep + "GLNtoPNG.py "
         self.view_btn_width = 3
         self.distance_error = {}
         self.list_hint_distance = []
@@ -110,8 +134,8 @@ class PyLink:
         self.protein_row_width = 40
         self.protein_row_name_width = 10
         self.protein_btn_width = 20
-        self.view_details_btn_width = 10
-        self.gln_row_name_width = 28
+        self.view_details_btn_width = 8
+        self.gln_row_name_width = 25
         # Advanced variables
         self.is_correct_data = tk.IntVar()
         self.is_gln_selected = tk.IntVar()
@@ -130,6 +154,11 @@ class PyLink:
             self.initialise_plugin_interface()
             self.adjust_object_representation()
 
+    def is_win(self):
+        return False
+
+    def conv_path(self, res):
+        return res.replace("/", "\\") if self.is_win() else res
     ####################################################################################################################
     #                             CHECK FILE EXTENSION & ADJUST POLYMER REPRESENTATION
     ####################################################################################################################
@@ -151,10 +180,10 @@ class PyLink:
             return
         elif 1 < len(self.open_file_window) <= 4:
             for i in self.open_file_window:
-                i = i.replace("/", "\\")
-                self._full_path_to_files.append(i)
+                self._full_path_to_files.append(self.conv_path(i))
         else:
-            self._full_path_to_files.append(self.open_file_window[0].replace("/", "\\"))
+            res = self.open_file_window[0]
+            self._full_path_to_files.append(self.conv_path(self.open_file_window[0]))
         self._full_path_to_dir = os.sep.join(self._full_path_to_files[0].split(os.sep)[:-1])
 
         cmd.reinitialize()
@@ -209,7 +238,7 @@ class PyLink:
         input_file = open(self._full_path_to_files[file_idx], "r").read()
         ss_bonds = list(re.findall('SSBOND|LINK', input_file, flags=re.M | re.S))
 
-        return len(ss_bonds) is not 0
+        return len(ss_bonds) != 0
 
     def convert_xyz_to_pdb(self, current_file, path_to_xyz_file, new_xyz_file, ch=None):
         output_file = open(path_to_xyz_file + os.sep + new_xyz_file, 'w')
@@ -742,7 +771,7 @@ class PyLink:
         if not self.type_closing_choice[1]:
             self.type_closing_choice[1] = True
             self.is_ions = True
-            self.chosen_own_ions_link = Pmw.ScrolledFrame(self.group_method.interior(), hull_width=500, hull_height=400,
+            self.chosen_own_ions_link = Pmw.ScrolledFrame(self.group_method.interior(), hull_width=gui_par('IONS_HULL_WIDTH'), hull_height=400,
                                                           usehullsize=1)
             self.chosen_own_ions_link.grid(sticky='swen', column=0, row=2, padx=5, pady=5)
 
@@ -768,7 +797,8 @@ class PyLink:
 
         for filename in self._full_path_to_files:
             file = filename.split(os.sep)[-1][:-4]
-            filtered_ions = list(filter(len, os.popen(self.prog_converter + filename + " -e").read().splitlines()))
+            filtered_ions = list(filter(len, subprocess.Popen((self.prog_converter + filename + " -e").split(" "),
+                                                         stdout=subprocess.PIPE).communicate()[0].decode('utf-8').splitlines()))
             re_atoms = re.compile("\w*-\d_\w\d*")
 
             if filtered_ions and ("ERROR!!!" in filtered_ions[0] or "WARNING!!!" in filtered_ions[0]):
@@ -1099,6 +1129,7 @@ class PyLink:
             except IndexError:
                 self.raise_popup_menu("An error occurred during import of file. Please make sure the lines contain "
                                       "proper data.")
+
         self.notebook.setnaturalsize()
 
     def create_joining_method_interior(self):
@@ -1269,7 +1300,9 @@ class PyLink:
         self.find_links()
         self.get_links_intersections()
         self.separate_link_files_to_hashdirectories()
+
         self.purge_output_data()
+
         self.check_smoothing_avaliability()
         self.purge_main_directory()
         self.calculate_smoothed_structures()
@@ -1290,7 +1323,8 @@ class PyLink:
 
         for filename in self._full_path_to_files:
             file = filename.split(os.sep)[-1][:-4]
-            filtered_bridges = list(filter(len, os.popen(self.prog_converter + filename + " -f").read().splitlines()))
+            filtered_bridges = list(filter(len, subprocess.Popen((self.prog_converter + filename + " -f").split(" "),
+                                                            stdout=subprocess.PIPE).communicate()[0].decode('utf-8').splitlines()))
             if not self._is_file_xyz[file]:
                 self.warning_gaps.append([(i.split(" ")[3], i.split(" ")[-3], i.split(" ")[-1]) for i in
                                           filtered_bridges if "WARNING" in i])
@@ -1385,10 +1419,9 @@ class PyLink:
         for idx, line in enumerate(self.loops_list):
             if not self.whole_chains_enabled.get():
                 if len(line[0].get()) == 0 and (len(line[1].get()) != 0 or len(line[2].get()) != 0):
-                    self.raise_popup_menu(
-                        'There are missing data in line ' + str(idx + 1) + ". Please provide a chain.")
+                    self.raise_popup_menu('There are missing data in line ' + str(idx + 1) + ". Please provide a chain.")
                 elif len(line[0].get()) != 0 and ((len(line[1].get()) == 0 and len(line[2].get()) != 0) or
-                                                      (len(line[1].get()) != 0 and len(line[2].get()) == 0)):
+                            (len(line[1].get()) != 0 and len(line[2].get()) == 0)) :
                     self.raise_popup_menu('There are missing data in line ' + str(idx + 1) + ".")
 
     def generate_chain_permutation(self, chains):
@@ -1528,7 +1561,7 @@ class PyLink:
                 data = ",".join(sorted(comp.get().replace(",", "").split(" ")))
                 command = self.prog_converter + self._full_path_to_dir + os.sep + macrolink + " " + arg + " " + data
                 print("Creating a component...")
-                res = os.popen(command).read()
+                res = subprocess.Popen(command.split(" "), stdout=subprocess.PIPE).communicate()[0].decode('utf-8')
                 if "ERROR!!!" in res:
                     err_msg = res.split("ERROR!!!")[1]
                     self.raise_popup_menu(err_msg)
@@ -1564,7 +1597,6 @@ class PyLink:
                     if not reg.match(beg) or not reg.match(end):
                         self.raise_popup_menu("Component " + str(idx + 1) + " line " + str(id + 1) +
                                               " contains invalid characters.")
-
                     if len(beg) == 0 and len(end) == 0:
                         break
                     if len(beg) < 5 or len(end) < 5:
@@ -1587,7 +1619,7 @@ class PyLink:
         macrolink = self._filenames[0]
         command = self.prog_converter + self._full_path_to_dir + os.sep + macrolink + " -x " + self._full_path_to_dir \
                   + os.sep + "bondfile.txt"
-        res = os.popen(command).read()
+        res = subprocess.Popen(command.split(" "), stdout=subprocess.PIPE).communicate()[0].decode('utf-8')
         if "ERROR!!!" in res:
             err_msg = res.split("ERROR!!!")[1]
             self.raise_popup_menu(err_msg)
@@ -1643,26 +1675,21 @@ class PyLink:
                 shutil.move(os.path.join(source, filename), os.path.join(target, filename))
 
     def find_links(self):
-        '''
-            Since Windows does not provide a fork function crucial for multiprocessing, multithreading is not available.
-            Therefore, each link needs to be checked in iteration which unfortunately prolongs the calculations.
-            Thanks Bill Gates!
-        '''
         print("  Calculating links...")
-        self.output_data = {}
-        self.selected_chains_links = {}
-        self.all_complex_links = {}
+        pool = mp.Pool(processes=mp.cpu_count())
+        manager = mp.Manager()
+        shared_dict = manager.dict()
+        sel_chains = manager.dict()
+        all_complex_links = manager.dict()
         for idx, elem in enumerate(self.user_data):
-            args = _calculate_links(idx, elem, self.output_data, self.selected_chains_links, self.all_complex_links)
-            if args:
-                self.output_data = self.merge_two_dicts(self.output_data, args[0])
-                self.selected_chains_links = self.merge_two_dicts(self.selected_chains_links, args[1])
-                self.all_complex_links = self.merge_two_dicts(self.all_complex_links, args[2])
+            pool.apply_async(_calculate_links, (idx, elem, shared_dict, sel_chains, all_complex_links))
+        pool.close()
+        pool.join()
 
-    def merge_two_dicts(self, x, y):
-        z = x.copy()
-        z.update(y)
-        return z
+        self.output_data = shared_dict.copy()
+        self.selected_chains_links = sel_chains.copy()
+        self.all_complex_links = all_complex_links.copy()
+        manager.shutdown()
 
     def get_links_intersections(self):
         self.intersections = {}
@@ -1672,7 +1699,7 @@ class PyLink:
             comb = self.selected_chains_links[comb]
             if self.is_macrolink:
                 chains = ["(" + str(_ + 1) + ")" for _ in range(len(comb))]
-            elif all(".xyz" in loop for loop in comb):  # ions
+            elif all(".xyz" in loop for loop in comb): #ions
                 chains = [_.split(".pdb_")[1].split("_")[0] for _ in comb]
             else:
                 chains = [_.split(" ")[0][-1] for _ in comb]
@@ -1750,7 +1777,7 @@ class PyLink:
             for idx, topology in enumerate(orig_links):
                 topology = topology.split("x")[0]
                 closure = self.probabilistic_surface_idx[hashcode + str(idx)]
-                smooth_lvl = self.smooth_level.get()
+                smooth_lvl = int(self.smooth_level.get())
 
                 while smooth_lvl > 0:
                     new_command = re.sub("SMLVL", str(smooth_lvl), command)
@@ -1758,7 +1785,6 @@ class PyLink:
 
                     call_homfly(new_command)
                     call_poly(hashcode)
-
                     try:
                         smooth_links = call_ncuc(hashcode, num_comp).split(" ")[3:-1]
                         smooth_links = self.fix_link_names(smooth_links)[1].split("x")[0].replace("X", " ")
@@ -1773,6 +1799,7 @@ class PyLink:
                     else:
                         smooth_lvl = int(floor(float(smooth_lvl) / 2))
                 else:
+                    self.purge_lmknots(hashcode + "_")
                     self.can_be_smoothed[cmb + str(idx)] = [False, None]
                     print(" WARNING! Change of topology for ", file + chain, " topology", topology, \
                         ". Smoothing will not be available.")
@@ -1821,7 +1848,7 @@ class PyLink:
             if ions_in_links:
                 command += " -noCheckIds 1"
 
-            smooth_lvl = self.smooth_level.get()
+            smooth_lvl = int(self.smooth_level.get())
             while smooth_lvl > 0:
                 new_command = re.sub("SMLVL", str(smooth_lvl), command)
 
@@ -2096,11 +2123,12 @@ class PyLink:
 
     def create_macroexplanation_interior(self):
         macroexplanation = ""
-        for idx, filechain in enumerate(sorted(self.output_data.keys())[0]):
+        for idx, filechain in enumerate(list(self.output_data.keys())[0]):
+            filechain = filechain.split(" ")[0]
             macroexplanation += "Component " + str(idx + 1) + " = " + filechain + "\n"
-        macroexplanation = macroexplanation[:-1]
-        macrolink_label = tk.Label(self.link_inf_group_chains.interior(), text=macroexplanation)
-        macrolink_label.grid(column=0, row=len(self.protein_array_btns) + 2, columnspan=4, pady=2, padx=5)
+
+        macrolink_label = tk.Label(self.link_inf_group_chains.interior(), text=textwrap.fill(macroexplanation[:-1], 40))
+        macrolink_label.grid(column=1, row=len(self.protein_array_btns) + 2, columnspan=2, pady=2, padx=5)
 
     def create_link_type_interior(self, link_type, interior, height, width=20):
         elem = tk.Text(interior, bg="white", height=height + 1, width=20, padx=0, pady=1, wrap="word", bd=0,
@@ -2111,7 +2139,7 @@ class PyLink:
             linkname = " ".join([word.capitalize() for word in link_type.split(" ")]).replace("sup", "SUP")
             link_type, link_sup, link_sub, link_img_name = self.simplify_link_img(linkname)[1:]
             image = tk.PhotoImage(file=os.path.join(plugin_path + os.sep + "_links_img", link_img_name)).subsample(6, 6)
-            tmp_label_lasso = tk.Label(self.win_link_info.interior())  # without label, pics will disappear
+            tmp_label_lasso = tk.Label(self.dialog.interior())  # without label, pics will disappear
             tmp_label_lasso.image = image
             link_img = tk.Label(elem, image=image, bg="white", height=25, width=25, bd=0)
             link_img.grid(column=0, row=0, padx=5)
@@ -2130,7 +2158,7 @@ class PyLink:
         return elem
 
     def simplify_link_img(self, name, ncomp=0):
-        if name == 'Other' or name == 'PUSTY': return '$Other$', 'Other', [], [], 'other.gif'
+        if name == 'Other' or name == 'PUSTY': return '$Other$', 'Other', [], [], 'other' + gui_par('GIF_PNG')
         calculated_ncomp = 0
         split_sum = name.split(' U ')
         for k in range(len(split_sum)):
@@ -2169,7 +2197,7 @@ class PyLink:
             latex = '$Unlink      '
             subscript = []
             superscript = []
-        return latex[:-6] + '$', name_string[:-3], superscript, subscript, figure_name + '_' + str(ncomp) + '.gif'
+        return latex[:-6] + '$', name_string[:-3], superscript, subscript, figure_name + '_' + str(ncomp) + gui_par('GIF_PNG')
 
     def gen_link_name_part(self, part, total_len):
         part = part.strip()
@@ -2315,7 +2343,7 @@ class PyLink:
             if self.is_ions:
                 for idx, loop in enumerate(chains):
                     row_names.append("Loop " + str(idx + 1))
-                self.chain_array_row_name_width = int(79 / len(row_names))
+                self.chain_array_row_name_width = int(gui_par('CHAIN_ARRAY_ROW_NAME_WIDTH') / len(row_names))
                 self.chain_array_row_width = self.chain_array_row_name_width + 8
             else:
                 row_names += ["N loop piercings", "C loop piercings"]
@@ -2342,7 +2370,7 @@ class PyLink:
                     else:
                         loop = ch.split(" ")[1] + "-" + ch.split(" ")[2]
                         row_names.append("Loop " + loop + " piercings")
-            self.chain_array_row_name_width = int(84/len(row_names))
+            self.chain_array_row_name_width = int(gui_par('CHAIN_ARRAY_ROW_NAME_WIDTH')/len(row_names))
             self.chain_array_row_width = self.chain_array_row_name_width + 8
 
             for idx, i in enumerate(row_names):
@@ -2356,7 +2384,7 @@ class PyLink:
                 rows[2].configure(width=8)
                 self.chain_array_row_width = [14, 14, 15]
                 for elem in rows[3:]:
-                    elem.configure(width=50/len(rows[3:]))
+                    elem.configure(width=gui_par('CHAIN_ARRAY_ROW_WIDTH')/len(rows[3:]))
                     self.chain_array_row_width.append(68/len(rows[3:]))
 
     def color_line_in_array_of_results(self, array, selected):
@@ -2480,11 +2508,12 @@ class PyLink:
             self.link_inf_piechart = subplot.pie(link_probabilities, labels=link_types, autopct='%.1f% %', colors=colors,
                                                  shadow=False, wedgeprops={"linewidth": 0})
         except TypeError:
-            self.link_inf_piechart = subplot.pie(link_probabilities, labels=link_types, autopct='%.1f% %',
+            self.link_inf_piechart = subplot.pie(link_probabilities, labels=link_types, #autopct='%.1f% %',
                                                  colors=colors, shadow=False)
         subplot.axis('equal')
         [i.set_visible(False) for i in self.link_inf_piechart[1]]
-        [i.set_visible(False) for i in self.link_inf_piechart[2]]
+        if len(self.link_inf_piechart)>2:
+            [i.set_visible(False) for i in self.link_inf_piechart[2]]
 
         centre_circle = pyplt.Circle((0, 0), 0.67, color='black', fc='white', linewidth=0)
         ax = self.link_inf_chart_probability.add_subplot(1, 1, 1)
@@ -2496,7 +2525,7 @@ class PyLink:
         self.link_inf_probability_canvas = FigureCanvasTkAgg(self.link_inf_chart_probability,
                                                              master=self.link_inf_probabilistic_chart.interior())
         self.link_inf_probability_canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
-        self.link_inf_probability_canvas.show()
+        self.link_inf_probability_canvas.draw()
         self.link_inf_probability_canvas.mpl_connect('motion_notify_event', self.display_chosen_probability)
 
         self.link_inf_chart_probability.add_axes(self.chart_img_axes)
@@ -2512,7 +2541,9 @@ class PyLink:
         self.initialise_probability_chart_image(idx_most_probable_link, link_types[idx_most_probable_link])
 
     def initialise_probability_chart_image(self, idx, link_type):
-        link_probability = self.link_inf_piechart[2][idx].get_text()
+        link_probability = ''
+        if len(self.link_inf_piechart) > 2:
+            link_probability = self.link_inf_piechart[2][idx].get_text()
         content = self.simplify_link_img(link_type)
         txt = content[0][0] + "\\rm " + content[0][1:]
         filename = plugin_path + os.sep + "_links_img" + os.sep + content[-1]
@@ -2530,7 +2561,9 @@ class PyLink:
             (hit, _) = i.contains(event)
             if hit:
                 link_type = i.get_label()
-                link_probability = self.link_inf_piechart[2][idx].get_text()
+                link_probability = ''
+                if len(self.link_inf_piechart) > 2:
+                    link_probability = self.link_inf_piechart[2][idx].get_text()
                 content = self.simplify_link_img(link_type)
                 txt = content[0][0] + "\\rm " + content[0][1:]
                 filename = plugin_path + os.sep + "_links_img" + os.sep + content[-1]
@@ -2567,7 +2600,7 @@ class PyLink:
         cmd.hide(representation="spheres", selection="all")
         cmd.hide(representation="nonbonded", selection="all") # hide nonbonded dots for macrolinks
         if hasattr(self, "ions_connections") and self.ions_connections:
-            tmp_pos_list = [self.is_ion_link_clicked.index(i) for i in self.is_ion_link_clicked if i.get() == 1]
+            tmp_pos_list = [self.is_ion_link_clicked.index(i) for i in self.is_ion_link_clicked if int(i.get()) == 1]
 
         if self.is_macrolink:
             for id, link in enumerate(comb):
@@ -2801,7 +2834,7 @@ class PyLink:
             if self.is_macrolink:
                 bridge_label, beg, end = key[i].split(" ")
                 chain = "X"
-                surf_text = "Surface (component " + str(i + 1) + ")"
+                surf_text = "Surface (Component " + str(i + 1) + ")"
             else:
                 if int(key[i].split(" ")[1]) > int(key[i].split(" ")[2]):
                     beg = key[i].split(" ")[2]
@@ -2980,7 +3013,7 @@ class PyLink:
                         cmd.color(color=self.colors_of_sequence[idx - 1], selection=bridge)
                     else:
                         cmd.color(color=self.colors_of_sequence[idx - 1], selection=seq + chain + "_" + br_beg + "_" + br_end)
-                if all(elem.get() == 1 for elem in self.link_inf_is_surface_displayed[1:]):
+                if all(int(elem.get()) == 1 for elem in self.link_inf_is_surface_displayed[1:]):
                     self.link_inf_surface_button.select()
             self.mark_crossings_on_structure()
         else:
@@ -3016,7 +3049,7 @@ class PyLink:
                     util.cbc(selection=seq + chain + "_" + br_beg + "_" + br_end, first_color=color, legacy=1)
                 if idx == 0:
                     self.link_inf_surface_bridges[i].deselect()
-            if any(elem.get() == 0 for elem in self.link_inf_is_surface_displayed[1:]):
+            if any(int(elem.get()) == 0 for elem in self.link_inf_is_surface_displayed[1:]):
                 self.link_inf_surface_button.deselect()
             print("  Surface without area of triangulation showed...")
 
@@ -3058,7 +3091,7 @@ class PyLink:
             self.link_inf_smooth_button.deselect()
             self.raise_popup_menu("No smoothing is available due to a change in the topology.")
 
-        if self.link_inf_is_surface_displayed[0].get() == 0:
+        if int(self.link_inf_is_surface_displayed[0].get()) == 0:
             self.link_inf_surface_button.select()
             for button in self.link_inf_surface_bridges:
                 button.select()
@@ -3243,12 +3276,12 @@ class PyLink:
             for obj in elem:
                 row_element.append(
                     tk.Text(self.gln_matrices.interior(), bg="white", height=height + 1, padx=0, pady=0, bd=0,
-                            width=self.gln_row_name_width+11, wrap="word", highlightthickness=0))
+                            width=self.gln_row_name_width+gui_par('GLN_CONTENT_ROW_NAME_WIDTH'), wrap="word", highlightthickness=0))
                 try:
                     self.configure_tkinter_text(row_element[-1], float(obj), 1)
                 except ValueError:
                     self.configure_tkinter_text(row_element[-1], obj, 1)
-            row_element[0].configure(width=self.gln_row_name_width+10)
+            row_element[0].configure(width=self.gln_row_name_width+gui_par('GLN_CONTENT_ELEMENT_WIDTH'))
             self.gln_array_of_results.append(row_element)
 
         row = 1
@@ -3263,6 +3296,7 @@ class PyLink:
                                               justify="center", width=self.view_details_btn_width,
                                               command=lambda x=idx, y=components[idx]: self.display_gln_matrices(x, y)))
             view_matrix_btns[-1].grid(column=0, row=idx + 1)
+
         if len(view_matrix_btns) == 1:
             view_matrix_btns[0].invoke()
 
@@ -3299,40 +3333,42 @@ class PyLink:
             command = self.generate_gln_deterministic(content, working_dir)
 
         try:
-            os.popen(command)
+            subprocess.Popen(command.split(" "), stdout=subprocess.PIPE).communicate()[0]
             if self.is_ions:
                 self.separate_files_to_directory(self._full_path_to_dir, target_dir, hashcode + "_GLN_.*.png")
-            self.separate_files_to_directory(self.current_working_dir, target_dir, hashcode + "_GLN_.*.png")
+            self.separate_files_to_directory(self.current_working_dir if self.is_win() else self.link_directory, target_dir, hashcode + "_GLN_.*.png")
         except Exception:
             self.raise_popup_menu("The GLN value is equal to 0. No GLN files were generated.")
 
-        if self.screen_height > 800:
+        if self.screen_height > gui_par('GLN_SCREEN_HEIGHT'):
             win_gln_matrices = Pmw.Group(self.gln_matrices.interior())
         else:
-            win_gln_matrices = Pmw.ScrolledFrame(self.gln_matrices.interior(), usehullsize=1, hull_width=850, hull_height=300)
-        win_gln_matrices.grid(column=0, row=len(self.gln_array_of_results)+2, columnspan=4)
+            win_gln_matrices = Pmw.ScrolledFrame(self.gln_matrices.interior(), usehullsize=1, hull_width=850 if self.is_win() else 890,
+                                                 hull_height=300)
+        win_gln_matrices.grid(column=0, row=len(self.gln_array_of_results)+2, columnspan=4 if self.is_win() else 5)
         gln_matrices = mplt.figure.Figure(figsize=self.gln_fig_size, dpi=self.gln_fig_dpi, facecolor='white')
 
         files = command.split(" ")
+        f = 1 if self.is_win() else 0
         if self.is_macrolink:
             if hasattr(self, "link_inf_is_smoothed") and self.link_inf_is_smoothed.get():
-                file1 = files[2].split("\\")[-1][:-4].split("macro_")[1].split("_L")[0]
-                file2 = files[5].split("\\")[-1][:-4].split("macro_")[1].split("_L")[0]
+                file1 = files[1+f].split(os.sep)[-1][:-4].split("macro_")[1].split("_L")[0]
+                file2 = files[4+f].split(os.sep)[-1][:-4].split("macro_")[1].split("_L")[0]
             else:
-                file1 = files[2].split("\\")[-1][:-4].split("macro_")[1]
-                file2 = files[5].split("\\")[-1][:-4].split("macro_")[1]
+                file1 = files[1+f].split(os.sep)[-1][:-4].split("macro_")[1]
+                file2 = files[4+f].split(os.sep)[-1][:-4].split("macro_")[1]
         elif hasattr(self, "link_inf_is_smoothed") and self.link_inf_is_smoothed.get():
-            file1 = files[2].split("\\")[-1].split(".pdb_")[1][0]
+            file1 = files[1+f].split(os.sep)[-1].split(".pdb_")[1][0]
             if self.notebook.getcurselection() == "Probabilistic":
-                file2 = files[3].split("\\")[-1].split(".pdb_")[1][0]
+                file2 = files[2+f].split(os.sep)[-1].split(".pdb_")[1][0]
             else:
-                file2 = files[5].split("\\")[-1].split(".pdb_")[1][0]
+                file2 = files[4+f].split(os.sep)[-1].split(".pdb_")[1][0]
         else:
             if self.is_ions:
-                file1 = files[2].split("\\")[-1][:-4].split(".pdb_")[1][0]
+                file1 = files[1+f].split(os.sep)[-1][:-4].split(".pdb_")[1][0]
             else:
-                file1 = files[2].split("\\")[-1][:-4][-1]
-            file2 = files[5].split("\\")[-1][:-4].split(".pdb_")[1][0]
+                file1 = files[1+f].split(os.sep)[-1][:-4][-1]
+            file2 = files[4+f].split(os.sep)[-1][:-4].split(".pdb_")[1][0]
         name1 = hashcode + "_GLN_1" + file1 + "-2" + file2 + ".png"
         name2 = hashcode + "_GLN_2" + file2 + "-1" + file1 + ".png"
 
@@ -3344,7 +3380,7 @@ class PyLink:
         gln_matrices_canvas = FigureCanvasTkAgg(gln_matrices, master=win_gln_matrices.interior())
         gln_matrices_canvas._tkcanvas.pack(side=tk.TOP, fill=tk.BOTH, expand=1)
         gln_matrices_canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
-        gln_matrices_canvas.show()
+        gln_matrices_canvas.draw()
         print("  GLN matrices displayed...")
 
     def generate_gln_deterministic(self, cnt, link_dir):
@@ -3399,8 +3435,8 @@ class PyLink:
         return self.prog_gln + args + "-out 0 -close " + close + " -ht " + hashcode
 
     def fix_gln_matrices(self, gln, id):
-        gln.add_axes([-0.28 + (id * 0.5), 0.4, 0.6, 0.3])
-        gln.axes[id].set_position([-0.28 + (id * 0.5), 0, 1, 1])
+        gln.add_axes([gui_par('FIX_GLX_MATRICES') + (id * 0.5), 0.4, 0.6, 0.3])
+        gln.axes[id].set_position([gui_par('FIX_GLX_MATRICES') + (id * 0.5), 0, 1, 1])
         gln.axes[id].get_yaxis().set_visible(False)
         gln.axes[id].get_xaxis().set_visible(False)
         gln.axes[id].spines["top"].set_visible(False)
@@ -3409,6 +3445,143 @@ class PyLink:
         gln.axes[id].spines["right"].set_visible(False)
         gln.axes[id].patch.set_visible(False)
         gln.axes[id].images = []
+
+
+class PyLinkWindows(PyLink):
+    def __init__(self, app):
+        self.parent = app.root
+        if cmd.get_version()[1] < 2.0:
+            self.bold_font = Font(family="Helvetica", size=8, weight="bold")
+            self.row_name_font = "bold 10"
+            self.surf_btn_width = 15
+            self.gln_fig_dpi = 98
+            self.gln_fig_size = (7.8, 3.5)
+            self.chart_img_axes = [0.3, 0.4, 0.4, 0.35]
+            self.chart_size = 3.3
+            self.chart_font_size = 28
+            self.chart_subtitle = 16
+        else:
+            self.parent.option_add("*Font", "Helvetica 9")
+            self.bold_font = Font(family="Helvetica", size=8, weight="bold")
+            self.row_name_font = "Helvetica 9"
+            self.surf_btn_width = 18
+            self.gln_fig_dpi = 98
+            self.gln_fig_size = (9, 4)
+            self.chart_img_axes = [0.3, 0.4, 0.42, 0.38]
+            self.chart_size = 3.0
+            self.chart_font_size = 18
+            self.chart_subtitle = 14
+
+        # Link variables
+        self.screen_height = self.parent.winfo_screenheight()
+        self.screen_width = self.parent.winfo_screenwidth()
+        self._filenames = []
+        self._chains = []
+        self._is_file_xyz = {}
+        self._is_file_macrolink = {}
+        self._contains_bridge = {}
+        self._chains_marginal_atoms = {}
+        self._marginal_atoms = {}
+        self.is_macrolink = False
+        self.is_ions = False
+        self.prog_converter = "python " + plugin_path + os.sep + 'converter.py '
+        self.prog_homfly = plugin_path + os.sep + "homfly.exe "
+        self.prog_poly = plugin_path + os.sep + "poly.exe  "
+        self.prog_ncuc = plugin_path + os.sep + "ncucLinks.exe "
+        self.prog_gln = "python " + plugin_path + os.sep + "GLNtoPNG.py "
+        self.view_btn_width = 3
+        self.distance_error = {}
+        self.list_hint_distance = []
+        self.previously_displayed_bond = []
+        self.bottom_btns_width = 6
+        self.suggest_btn_width = 18
+        self.retrieve_btns_width = 9
+        self.retrieve_btns_pad = 1  # needed?
+        self.hint_width = 60
+        # Link information window
+        self.protein_row_width = 40
+        self.protein_row_name_width = 10
+        self.protein_btn_width = 20
+        self.view_details_btn_width = 10
+        self.gln_row_name_width = 28
+        # Advanced variables
+        self.is_correct_data = tk.IntVar()
+        self.is_gln_selected = tk.IntVar()
+        self.whole_chains_enabled = tk.IntVar()
+        # Macromolecular links
+        self.joining_method = tk.IntVar()
+
+        self.xyz_chain_possibilities = list(
+            reversed((string.ascii_uppercase)))  # 2+ XYZ files needs to have chains assigned
+
+        self.colors_of_piercings = [[0.0, 0.0, 1.0], [1.0, 1.0, 0.0], [1.0, 1.0, 0.0], [1.0, 0.0, 0.0]]
+        self.colors_of_sequence = ["yelloworange", "violet", "lightteal", "limegreen", ]
+        self.colors_of_surfaces = [[1.0, 1.0, 0.5], [1.0, 0.75, 0.87], [0.8, 1.0, 1.0], [0.65, 0.9, 0.65]]
+
+        self.load_file()
+        if self._filenames:
+            self.initialise_plugin_interface()
+            self.adjust_object_representation()
+
+    def is_win(self):
+        return True
+
+    def find_links(self):
+        '''
+            Since Windows does not provide a fork function crucial for multiprocessing, multithreading is not available.
+            Therefore, each link needs to be checked in iteration which unfortunately prolongs the calculations.
+            Thanks Bill Gates!
+        '''
+        print("  Calculating links...")
+        self.output_data = {}
+        self.selected_chains_links = {}
+        self.all_complex_links = {}
+        for idx, elem in enumerate(self.user_data):
+            args = _calculate_links(idx, elem, self.output_data, self.selected_chains_links, self.all_complex_links)
+            if args:
+                self.output_data = self.merge_two_dicts(self.output_data, args[0])
+                self.selected_chains_links = self.merge_two_dicts(self.selected_chains_links, args[1])
+                self.all_complex_links = self.merge_two_dicts(self.all_complex_links, args[2])
+
+    def merge_two_dicts(self, x, y):
+        z = x.copy()
+        z.update(y)
+        return z
+
+    def create_macroexplanation_interior(self):
+        macroexplanation = ""
+        for idx, filechain in enumerate(sorted(self.output_data.keys())[0]):
+            macroexplanation += "Component " + str(idx + 1) + " = " + filechain + "\n"
+        macroexplanation = macroexplanation[:-1]
+        macrolink_label = tk.Label(self.link_inf_group_chains.interior(), text=macroexplanation)
+        macrolink_label.grid(column=0, row=len(self.protein_array_btns) + 2, columnspan=4, pady=2, padx=5)
+
+    def create_link_type_interior(self, link_type, interior, height, width=20):
+        elem = tk.Text(interior, bg="white", height=height + 1, width=20, padx=0, pady=1, wrap="word", bd=0,
+                       highlightthickness=0)
+        try:
+            if link_type.capitalize() == "Complex" or link_type.capitalize() == "Trivial":
+                raise Exception
+            linkname = " ".join([word.capitalize() for word in link_type.split(" ")]).replace("sup", "SUP")
+            link_type, link_sup, link_sub, link_img_name = self.simplify_link_img(linkname)[1:]
+            image = tk.PhotoImage(file=os.path.join(plugin_path + os.sep + "_links_img", link_img_name)).subsample(6, 6)
+            tmp_label_lasso = tk.Label(self.win_link_info.interior())  # without label, pics will disappear
+            tmp_label_lasso.image = image
+            link_img = tk.Label(elem, image=image, bg="white", height=25, width=25, bd=0)
+            link_img.grid(column=0, row=0, padx=5)
+
+            link_type_name = tk.Text(elem, bg="white", height=height, padx=0, pady=0, wrap="word",
+                                     width=width - 9, bd=0, highlightthickness=0)
+            self.configure_linkname_text(link_type_name, link_type, link_sup, link_sub, height)
+            link_type_name.grid(column=1, row=0)
+        except Exception:
+            link_type_name = tk.Text(elem, bg="white", height=height + 1, padx=0, pady=0, wrap="word", width=width,
+                                     bd=0, highlightthickness=0)
+            self.configure_tkinter_text(link_type_name, link_type, 1)
+            link_type_name.grid(column=1, row=0)
+        elem.configure(state="disabled")
+
+        return elem
 
 
 def _calculate_links(idx, command, out_data, sel_chains_links, complex_chains_links):
@@ -3467,12 +3640,14 @@ def _calculate_links(idx, command, out_data, sel_chains_links, complex_chains_li
                                 out_data[combination] = [links, hashcode]
                             if int(link_probability) > 0 and "COMPLEX" in links[0]:
                                 complex_chains_links[combination] = links[1]
-            return out_data, sel_chains_links, complex_chains_links
+    return out_data, sel_chains_links, complex_chains_links
+
+
 
 
 def call_homfly(command):
     try:
-        return os.popen(command).read()
+        return subprocess.Popen(command.split(" "), stdout=subprocess.PIPE).communicate()[0].decode('utf-8')
     except Exception:
         print("Something went wrong with executable file. Please make sure you changed access permission to " \
               "it (can be obtained by typing in console chmod a+x __homfly).")
@@ -3481,7 +3656,8 @@ def call_homfly(command):
 def call_poly(hc):
     try:
         emcode = hc + "_EMCode.txt"
-        os.popen(plugin_path + os.sep + "poly " + emcode)
+        subprocess.Popen((plugin_path + os.sep + "poly " + emcode).split(" "),
+                         stdout=subprocess.PIPE).communicate()[0]
     except Exception:
         print("Something went wrong with executable file. Please make sure you changed access permission to " \
               "it (can be obtained by typing in console chmod a+x __poly).")
@@ -3490,7 +3666,10 @@ def call_poly(hc):
 def call_ncuc(hc, nc, inters=0):
     try:
         lmknot = hc + "_LMKNOT.txt" + (" -inters " + hc + "_inters.txt" if inters else "")
-        return os.popen(plugin_path + os.sep + "ncucLinks " + lmknot + " -X 1 -comp " + nc).read()
+        return subprocess.Popen((plugin_path + os.sep + "ncucLinks " + lmknot + " -X 1 -comp " + nc).split(" "),
+                                stdout=subprocess.PIPE).communicate()[0].decode('utf-8')
     except Exception:
         print("Something went wrong with executable file. Please make sure you changed access permission to " \
               "it (can be obtained by typing in console chmod a+x __ncucLinks).")
+
+
