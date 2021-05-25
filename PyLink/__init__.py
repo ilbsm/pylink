@@ -15,6 +15,7 @@
 # PERFORMANCE OF THIS SOFTWARE.
 # ----------------------------------------------------------------------
 import re
+import string
 import subprocess
 import shutil
 import textwrap
@@ -49,6 +50,8 @@ try:
     import matplotlib.image as mpimg
     from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
     from matplotlib.lines import Line2D
+    if platform.system()=='Darwin':
+        mp.set_start_method("fork")
 except:
     print("  ### Matplotlib library not found. Please install it and re-run the plugin.")
 
@@ -116,7 +119,7 @@ class PyLink:
         self._marginal_atoms = {}
         self.is_macrolink = False
         self.is_ions = False
-        self.prog_converter = plugin_path + os.sep + 'converter.py '
+        self.prog_converter = 'python3 ' + plugin_path + os.sep + 'converter.py '
         self.prog_homfly = plugin_path + os.sep + "homfly "
         self.prog_poly = plugin_path + os.sep + "poly "
         self.prog_ncuc = plugin_path + os.sep + "ncucLinks "
