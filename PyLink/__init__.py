@@ -2387,7 +2387,7 @@ class PyLink:
                 rows[2].configure(width=8)
                 self.chain_array_row_width = [14, 14, 15]
                 for elem in rows[3:]:
-                    elem.configure(width=gui_par('CHAIN_ARRAY_ROW_WIDTH')/len(rows[3:]))
+                    elem.configure(width=int(gui_par('CHAIN_ARRAY_ROW_WIDTH')/len(rows[3:])))
                     self.chain_array_row_width.append(68/len(rows[3:]))
 
     def color_line_in_array_of_results(self, array, selected):
