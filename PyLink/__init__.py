@@ -801,7 +801,7 @@ class PyLink:
         for filename in self._full_path_to_files:
             file = filename.split(os.sep)[-1][:-4]
             filtered_ions = list(filter(len, subprocess.Popen((self.prog_converter + filename + " -e").split(" "),
-                                                         stdout=subprocess.PIPE).communicate()[0].decode('utf-8').splitlines()))
+                                                         stdout=subprocess.PIPE, cwd=self._full_path_to_dir).communicate()[0].decode('utf-8').splitlines()))
             re_atoms = re.compile("\w*-\d_\w\d*")
 
             if filtered_ions and ("ERROR!!!" in filtered_ions[0] or "WARNING!!!" in filtered_ions[0]):
@@ -1327,7 +1327,7 @@ class PyLink:
         for filename in self._full_path_to_files:
             file = filename.split(os.sep)[-1][:-4]
             filtered_bridges = list(filter(len, subprocess.Popen((self.prog_converter + filename + " -f").split(" "),
-                                                            stdout=subprocess.PIPE).communicate()[0].decode('utf-8').splitlines()))
+                                                            stdout=subprocess.PIPE, cwd=self._full_path_to_dir).communicate()[0].decode('utf-8').splitlines()))
             if not self._is_file_xyz[file]:
                 self.warning_gaps.append([(i.split(" ")[3], i.split(" ")[-3], i.split(" ")[-1]) for i in
                                           filtered_bridges if "WARNING" in i])
@@ -1622,7 +1622,7 @@ class PyLink:
         macrolink = self._filenames[0]
         command = self.prog_converter + self._full_path_to_dir + os.sep + macrolink + " -x " + self._full_path_to_dir \
                   + os.sep + "bondfile.txt"
-        res = subprocess.Popen(command.split(" "), stdout=subprocess.PIPE).communicate()[0].decode('utf-8')
+        res = subprocess.Popen(command.split(" "), stdout=subprocess.PIPE, cwd=self._full_path_to_dir).communicate()[0].decode('utf-8')
         if "ERROR!!!" in res:
             err_msg = res.split("ERROR!!!")[1]
             self.raise_popup_menu(err_msg)
@@ -1663,9 +1663,9 @@ class PyLink:
 
     def move_files_to_polymer_directory(self, link_dir, hc):
         os.chdir(self.link_directory)
-        self.separate_files_to_directory(self.current_working_dir, link_dir, hc + "_(inters(_OUT)*|results|glns).txt")
-        self.separate_files_to_directory(self.current_working_dir, link_dir + os.sep + "_sm", hc + "_.*_sm\d*.xyz")
-        self.separate_files_to_directory(self.current_working_dir, link_dir, hc + "_.*_cl\d*.jm")
+        self.separate_files_to_directory(self._full_path_to_dir, link_dir, hc + "_(inters(_OUT)*|results|glns).txt")
+        self.separate_files_to_directory(self._full_path_to_dir, link_dir + os.sep + "_sm", hc + "_.*_sm\d*.xyz")
+        self.separate_files_to_directory(self._full_path_to_dir, link_dir, hc + "_.*_cl\d*.jm")
         os.chdir(self.current_working_dir)
 
     def separate_files_to_directory(self, source, target, regex):
@@ -1685,7 +1685,7 @@ class PyLink:
         sel_chains = manager.dict()
         all_complex_links = manager.dict()
         for idx, elem in enumerate(self.user_data):
-            pool.apply_async(_calculate_links, (idx, elem, shared_dict, sel_chains, all_complex_links))
+            pool.apply_async(_calculate_links, (idx, elem, shared_dict, sel_chains, all_complex_links, self._full_path_to_dir))
         pool.close()
         pool.join()
 
@@ -1713,7 +1713,7 @@ class PyLink:
                 self.read_intersections(hashcode, link_name, idx, chains)
 
     def read_intersections(self, hc, l_n, arr_idx, ch):
-        path_to_intersections = self.current_working_dir + os.sep + hc + "_inters_OUT.txt"
+        path_to_intersections = self._full_path_to_dir + os.sep + hc + "_inters_OUT.txt"
 
         with open(path_to_intersections, "r") as input:
             for idx, line in enumerate(input):
@@ -1786,10 +1786,10 @@ class PyLink:
                     new_command = re.sub("SMLVL", str(smooth_lvl), command)
                     new_command = re.sub("CLLVL", str(closure), new_command)
 
-                    call_homfly(new_command)
-                    call_poly(hashcode)
+                    call_homfly(new_command, cwd=self._full_path_to_dir)
+                    call_poly(hashcode, cwd=self._full_path_to_dir)
                     try:
-                        smooth_links = call_ncuc(hashcode, num_comp).split(" ")[3:-1]
+                        smooth_links = call_ncuc(hashcode, num_comp, cwd=self._full_path_to_dir).split(" ")[3:-1]
                         smooth_links = self.fix_link_names(smooth_links)[1].split("x")[0].replace("X", " ")
                         self.purge_lmknots(hashcode + "_")
                     except IndexError:
@@ -1855,9 +1855,9 @@ class PyLink:
             while smooth_lvl > 0:
                 new_command = re.sub("SMLVL", str(smooth_lvl), command)
 
-                call_homfly(new_command)
-                call_poly(hashcode)
-                smooth_links = call_ncuc(hashcode, num_comp).split(" ")[3:-1]
+                call_homfly(new_command, cwd=self._full_path_to_dir)
+                call_poly(hashcode, cwd=self._full_path_to_dir)
+                smooth_links = call_ncuc(hashcode, num_comp, cwd=self._full_path_to_dir).split(" ")[3:-1]
                 # oh Wanda, Wanda...
                 if len(smooth_links) > 1 and "-" == smooth_links[0]:
                     smooth_links = smooth_links[-2:]
@@ -1934,9 +1934,9 @@ class PyLink:
                 if ions_in_links:
                     command += "-noCheckIds 1 "
                 command += "-sf 2"
-                call_homfly(command)
+                call_homfly(command, cwd=self._full_path_to_dir)
                 self.purge_lmknots()
-                self.separate_files_to_directory(self.current_working_dir, path_to_smooth_dir, "s\d*_" + hashcode +
+                self.separate_files_to_directory(self._full_path_to_dir, path_to_smooth_dir, "s\d*_" + hashcode +
                                                  "_ch\d*(ADD)*_")
 
     def separate_link_files_to_hashdirectories(self):
@@ -3336,10 +3336,10 @@ class PyLink:
             command = self.generate_gln_deterministic(content, working_dir)
 
         try:
-            subprocess.Popen(command.split(" "), stdout=subprocess.PIPE).communicate()[0]
+            subprocess.Popen(command.split(" "), stdout=subprocess.PIPE, cwd=self._full_path_to_dir).communicate()[0]
             if self.is_ions:
                 self.separate_files_to_directory(self._full_path_to_dir, target_dir, hashcode + "_GLN_.*.png")
-            self.separate_files_to_directory(self.current_working_dir if self.is_win() else self.link_directory, target_dir, hashcode + "_GLN_.*.png")
+            self.separate_files_to_directory(self._full_path_to_dir if self.is_win() else self.link_directory, target_dir, hashcode + "_GLN_.*.png")
         except Exception:
             self.raise_popup_menu("The GLN value is equal to 0. No GLN files were generated.")
 
@@ -3540,7 +3540,7 @@ class PyLinkWindows(PyLink):
         self.selected_chains_links = {}
         self.all_complex_links = {}
         for idx, elem in enumerate(self.user_data):
-            args = _calculate_links(idx, elem, self.output_data, self.selected_chains_links, self.all_complex_links)
+            args = _calculate_links(idx, elem, self.output_data, self.selected_chains_links, self.all_complex_links, cwd=self._full_path_to_dir)
             if args:
                 self.output_data = self.merge_two_dicts(self.output_data, args[0])
                 self.selected_chains_links = self.merge_two_dicts(self.selected_chains_links, args[1])
@@ -3587,16 +3587,16 @@ class PyLinkWindows(PyLink):
         return elem
 
 
-def _calculate_links(idx, command, out_data, sel_chains_links, complex_chains_links):
+def _calculate_links(idx, command, out_data, sel_chains_links, complex_chains_links, cwd=os.getcwd()):
     link = command
     hashcode = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(4))
     link += " -ht " + hashcode
-    homfly = call_homfly(link)
+    homfly = call_homfly(link, cwd=cwd)
     if "ERROR" not in homfly:
-        call_poly(hashcode)
+        call_poly(hashcode, cwd=cwd)
         combination = global_combinations[idx]
         num_comp = str(len(combination))
-        ncuc = call_ncuc(hashcode, num_comp, 1)
+        ncuc = call_ncuc(hashcode, num_comp, 1, cwd=cwd)
         process = list(filter(len, ncuc.split(" ")))
         if process and process[0] != "\n":
             for id in range(len(process[3:])):
@@ -3648,28 +3648,28 @@ def _calculate_links(idx, command, out_data, sel_chains_links, complex_chains_li
 
 
 
-def call_homfly(command):
+def call_homfly(command, cwd=os.getcwd()):
     try:
-        return subprocess.Popen(command.split(" "), stdout=subprocess.PIPE).communicate()[0].decode('utf-8')
+        return subprocess.Popen(command.split(" "), cwd=cwd, stdout=subprocess.PIPE).communicate()[0].decode('utf-8')
     except Exception:
         print("Something went wrong with executable file. Please make sure you changed access permission to " \
               "it (can be obtained by typing in console chmod a+x __homfly).")
 
 
-def call_poly(hc):
+def call_poly(hc, cwd=os.getcwd()):
     try:
         emcode = hc + "_EMCode.txt"
-        subprocess.Popen((plugin_path + os.sep + "poly " + emcode).split(" "),
+        subprocess.Popen((plugin_path + os.sep + "poly " + emcode).split(" "), cwd=cwd,
                          stdout=subprocess.PIPE).communicate()[0]
     except Exception:
         print("Something went wrong with executable file. Please make sure you changed access permission to " \
               "it (can be obtained by typing in console chmod a+x __poly).")
 
 
-def call_ncuc(hc, nc, inters=0):
+def call_ncuc(hc, nc, inters=0, cwd=os.getcwd()):
     try:
         lmknot = hc + "_LMKNOT.txt" + (" -inters " + hc + "_inters.txt" if inters else "")
-        return subprocess.Popen((plugin_path + os.sep + "ncucLinks " + lmknot + " -X 1 -comp " + nc).split(" "),
+        return subprocess.Popen((plugin_path + os.sep + "ncucLinks " + lmknot + " -X 1 -comp " + nc).split(" "), cwd=cwd,
                                 stdout=subprocess.PIPE).communicate()[0].decode('utf-8')
     except Exception:
         print("Something went wrong with executable file. Please make sure you changed access permission to " \
